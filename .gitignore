@@ -7,8 +7,6 @@ Makefile
 *.mk
 *.bash
 
-# Compiled Source#
-##################
 *.com
 *.class
 *.dll
@@ -16,9 +14,9 @@ Makefile
 *.o
 *.so
 
-#Packages#
-##########
-*.7z
+# Packages #
+############
+*.7zip
 *.dmg
 *.gz
 *.iso
@@ -27,20 +25,19 @@ Makefile
 *.tar
 *.zip
 
-#Logs and databases#
-####################
+# Logs and Databases #
+######################
 *.log
 *.sql
 *.sqlite
 
-#OS generated files#
-####################
+# OS generated files #
+######################
 .DS_Store
-.DS_Store?
+.DS_Sotre?
 ._*
 .Spotlight-V100
 .Trashes
 ehthumbs.db
 Thumbs.db
-
 
