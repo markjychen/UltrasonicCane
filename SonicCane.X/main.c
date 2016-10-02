@@ -68,7 +68,7 @@ void main(void)
      volt=(volt<<8) | ADRESL; //Math needs to be done in the int variable
      if(volt==1023) //Fix roundoff error
         volt=1022;
-     sprintf(str,"%04d",volt*5/10); //Approximate conversion to 0-5V
+     sprintf(str,"%04d",volt*49/10); //Approximate conversion to 0-5V
       
      LCDGoto(0,1);
      isLeftBtnPressed();
@@ -78,7 +78,6 @@ void main(void)
 
      switch (state%5){
             case STANDARD:
-                sprintf(str,"%04d",volt); //Approximate conversion to 0-5V
                LCDPutChar(str[0]);
                LCDPutChar('.');
                 LCDPutChar(str[1]);
