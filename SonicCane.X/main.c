@@ -119,9 +119,13 @@ void SysInit(void)
     ANSELAbits.ANSA0 = 1;
     TRISAbits.RA0 = 1; //Analog in
     ADCON2bits.ACQT=001; //2 TAD
-    ADCON2bits.ADCS=010; //FOSC/32
+    ADCON2bits.ADCS=100; //FOSC/32
     ADCON2bits.ADFM=1; //Left justified
     ADCON0bits.ADON=1; //Turn on A/D
+    
+    //ANSELAbits.ANSA0 = 1;
+    //TRISAbits.RA0 = 1; //Analog in
+    //ADCON0 = 0b00000000;
     
     //Set up LCD
     ANSELD = 0x00;
