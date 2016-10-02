@@ -108,7 +108,7 @@ void SysInit(void)
 {
     //OSCCON=0b01010110; //4 MHz internal oscillator
                         // 16 MHz internal: 0b01110110; 
-    OSCCON = 0b01010110;
+    OSCCON = 0b01110110;
 
     //Set up buttons
     ANSELBbits.ANSB0=0; //Digital
