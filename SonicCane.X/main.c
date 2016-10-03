@@ -58,7 +58,7 @@ void main(void)
   while(1)
   {
     // Set up variables
-     unsigned int volt = 3; //16 bits
+     unsigned int volt = 7; //16 bits
      char str[4];
 
       //Start A/D Conversion
@@ -116,7 +116,7 @@ void SysInit(void)
     TRISBbits.RB0=1; //Input
 
     //Set up A/D on AN0
-    ANSELAbits.ANSA1 = 1;
+    /*ANSELAbits.ANSA1 = 1;
     TRISAbits.RA1 = 1; //Analog in //want AN1 
     ADCON2bits.ACQT=001; //2 TAD
     ADCON2bits.ADCS=100; //FOSC/32
@@ -126,7 +126,24 @@ void SysInit(void)
     //Set up CHS
     ADCON0 = 0b10001011; //AN1???
     ADCON1 = 0b00000000;
-    ADCON2 = 0b10000010;
+    ADCON2 = 0b10000010;*/
+    
+    OSCCON=0b01010110; //set to 4 MHz (labA))
+    //ANSELAbits.ANSA0 = 1; //(labA)
+    //TRISAbits.RA0 = 1; //Analog in (labA))
+    ADCON2bits.ACQT=001; //2 TAD (labA))
+    //ADCON2bits.ADCS=010; //FOSC/32 (labA))
+    ADCON2bits.ADFM=1; //Right justified (labA))
+    ADCON0bits.ADON=1; //Turn on A/D (labA))
+    
+    ADCON1 = 0b00001110;//VSS,VDD ref. AN0 analog only
+	ADCON0 = 0b10001010;//clear ADCON0 to select channel 0 (AN0)
+	ADCON2 = 0b00001000;//ADCON2 setup: Left justified, Tacq=2Tad, Tad=2*Tosc (or Fosc/2)
+    ADCON2bits.ACQT=001; //2 TAD
+    ADCON2bits.ADCS=010; //FOSC/32
+    ADCON2bits.ADFM=1; //Left justified
+	ADCON0bits.ADON = 0x01;//Enable A/D module
+    ADCON0bits.CHS=0001; //Select RA1
          
     //ANSELAbits.ANSA0 = 1;
     //TRISAbits.RA0 = 1; //Analog in
