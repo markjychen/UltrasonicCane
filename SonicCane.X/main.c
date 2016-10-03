@@ -116,13 +116,18 @@ void SysInit(void)
     TRISBbits.RB0=1; //Input
 
     //Set up A/D on AN0
-    ANSELAbits.ANSA0 = 1;
-    TRISAbits.RA0 = 1; //Analog in
+    ANSELAbits.ANSA1 = 1;
+    TRISAbits.RA1 = 1; //Analog in //want AN1 
     ADCON2bits.ACQT=001; //2 TAD
     ADCON2bits.ADCS=100; //FOSC/32
     ADCON2bits.ADFM=1; //Left justified
     ADCON0bits.ADON=1; //Turn on A/D
     
+    //Set up CHS
+    ADCON0 = 0b0000100; //AN1???
+    ADCON1 = 0b00000000;
+    ADCON2 = 0b10101011;
+         
     //ANSELAbits.ANSA0 = 1;
     //TRISAbits.RA0 = 1; //Analog in
     //ADCON0 = 0b00000000;
