@@ -36,13 +36,17 @@
 #pragma config XINST = OFF      // Instruction set Extension and indexed Addressing mode disabled
 
 #define STANDARD 0
-#define EXTENDED 1
-#define BAT_SAVER 2
-#define TEST_A 3
-#define TEST_B 4 
+#define BAT_SAVER 1
+#define TEST_SER 2 
+#define NO_OF_STATES 3
 
 unsigned char state;
+
 void SysInit(void);
+void standardState(void);
+void powerSaverState (void);
+void debugState(void);
+int analogRead(void);
 
 unsigned char isLeftBtnPressed(void);
 unsigned char isRightBtnPressed(void);
@@ -58,16 +62,11 @@ void main(void)
   while(1)
   {
     // Set up variables
-     unsigned int volt = 7; //16 bits
-     char str[4];
-
-      //Start A/D Conversion
-     ADCON0bits.GO = 1; 
-     while (ADCON0bits.GO ==1){}; //GO bit automatically clears
-     volt = ADRESH;
-     volt=(volt<<8) | ADRESL; //Math needs to be done in the int variable
-     if(volt==1023) //Fix roundoff error
-        volt=1022;
+     unsigned int volt = 0; //16 bits
+     char str[4];           // initialize
+     
+     volt = analogRead();
+     
      sprintf(str,"%04d",volt*49/10); //Approximate conversion to 0-5V
       
      LCDGoto(0,1);
@@ -76,26 +75,20 @@ void main(void)
      Delay10KTCYx(10);
         //delay(100);
 
-     switch (state%5){
+     switch (state%NO_OF_STATES){
             case STANDARD:
-               LCDPutChar(str[0]);
-               LCDPutChar('.');
+                LCDPutChar(str[0]);
+                LCDPutChar('.');
                 LCDPutChar(str[1]);
                 LCDPutChar(str[2]);
                 LCDPutChar(str[3]);
                 LCDPutChar('V');        
                 break;
-            case EXTENDED:
-                LCDWriteStr("Extended");
-                break;
             case BAT_SAVER:
                 LCDWriteStr("Battery Saver");
                 break;
-            case TEST_A:
-                LCDWriteStr("Placeholder A");
-                break;
-            case TEST_B:
-                LCDWriteStr("Placeholder B");
+            case TEST_SER:
+                LCDWriteStr("Connect2Serial");
                 break;
             default:
                 //add error
@@ -165,4 +158,15 @@ unsigned char isRightBtnPressed(void){
       return 1;
  }
  return 0;
+}
+
+int analogRead(void){
+          //Start A/D Conversion
+     int val = 0;
+     ADCON0bits.GO = 1; 
+     while (ADCON0bits.GO ==1){}; //GO bit automatically clears
+     val = ADRESH;
+     val=(val<<8) | ADRESL; //Math needs to be done in the int variable
+     if(val==1023) //Fix roundoff error
+        val=1022;
 }
