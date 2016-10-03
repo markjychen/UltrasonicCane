@@ -42,14 +42,19 @@
 
 unsigned char state;
 
+// List of Code States
 void SysInit(void);
 void standardState(void);
 void powerSaverState (void);
 void debugState(void);
-int analogRead(void);
 
+//List of Necessary Functions
 unsigned char isLeftBtnPressed(void);
 unsigned char isRightBtnPressed(void);
+int analogRead(void);
+int writePWM(int pin, int freq); //useful for generating PWM
+int freqFromVoltage (int volt);
+void serialReader(void);
 
 void main(void)
 {
@@ -65,7 +70,7 @@ void main(void)
      unsigned int volt = 0; //16 bits
      char str[4];           // initialize
      
-     volt = analogRead();
+     volt = analogRead();   //Always get new volt data
      
      sprintf(str,"%04d",volt*49/10); //Approximate conversion to 0-5V
       
@@ -77,6 +82,7 @@ void main(void)
 
      switch (state%NO_OF_STATES){
             case STANDARD:
+                //TODO: Generate a simple print function
                 LCDPutChar(str[0]);
                 LCDPutChar('.');
                 LCDPutChar(str[1]);
@@ -117,10 +123,7 @@ void SysInit(void)
     ADCON2bits.ADFM=1; //Right justified (labA))
     ADCON2bits.ACQT=001; //2 TAD
     ADCON2bits.ADCS=010; //FOSC/32
-    ADCON2bits.ADFM=1; //Left justified
-    
-    ADCON0bits.ADON=1; //Turn on A/D (labA)
- 
+     
     ADCON0 = 0b10001010;//clear ADCON0 to select channel 0 (AN0)
 	ADCON0bits.ADON = 0x01;//Enable A/D module
     ADCON0bits.CHS=0001; //Select RA1
@@ -170,4 +173,15 @@ int analogRead(void){
      if(val==1023) //Fix roundoff error
         val=1022;
      return val;
+}
+
+int writePWM(int pin, int freq){
+    //TODO: Write out to digital pin at specified PWM
+}
+
+int freqFromVoltage (int volt){
+    //TODO: Convert voltage value to a distance, and a distance to a frequency
+}
+void serialReader(void){
+    //TODO: Write functionality so PIC can write to serial
 }
