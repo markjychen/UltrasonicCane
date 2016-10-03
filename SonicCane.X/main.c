@@ -169,4 +169,5 @@ int analogRead(void){
      val=(val<<8) | ADRESL; //Math needs to be done in the int variable
      if(val==1023) //Fix roundoff error
         val=1022;
+     return val;
 }
