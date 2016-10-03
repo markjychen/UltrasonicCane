@@ -58,7 +58,7 @@ void main(void)
   while(1)
   {
     // Set up variables
-     unsigned int volt; //16 bits
+     unsigned int volt = 3; //16 bits
      char str[4];
 
       //Start A/D Conversion
@@ -124,9 +124,9 @@ void SysInit(void)
     ADCON0bits.ADON=1; //Turn on A/D
     
     //Set up CHS
-    ADCON0 = 0b0000100; //AN1???
+    ADCON0 = 0b10001011; //AN1???
     ADCON1 = 0b00000000;
-    ADCON2 = 0b10101011;
+    ADCON2 = 0b10000010;
          
     //ANSELAbits.ANSA0 = 1;
     //TRISAbits.RA0 = 1; //Analog in
