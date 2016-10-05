@@ -117,6 +117,8 @@ void SysInit(void)
     //Set up A/D on AN1    
     OSCCON=0b01010110; //set to 4 MHz (labA))   
     
+    TRISAbits.RA1=1; //Input  NEED THIS
+
     ADCON1 = 0b00001110;//VSS,VDD ref. AN0 analog only
 	ADCON2 = 0b00001000;//ADCON2 setup: Left justified, Tacq=2Tad, Tad=2*Tosc (or Fosc/2)
     ADCON2bits.ACQT=001; //2 TAD (labA))
