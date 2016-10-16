@@ -7,12 +7,12 @@
 //            |
 //            V
 //          Standard (loop)       ------ (R btn) ---->  Extended
-//             ^                 <-------(L btn) ------    | 
-//             |                                           | 
-//             |                                    (R btn)  
-//             |                                           | 
-//             |                                           | 
-//             |  <--------------------- (L btn) ----------| 
+//             ^                 <-------(L btn) ------    |
+//             |                                           |
+//             |                                    (R btn)
+//             |                                           |
+//             |                                           |
+//             |  <--------------------- (L btn) ----------|
 //             --------------- <------- (R btn) -----Battery Saver
 
 
@@ -39,7 +39,13 @@
 #define EXTENDED 1
 #define BAT_SAVER 2
 #define TEST_A 3
-#define TEST_B 4 
+#define TEST_B 4
+
+__CONFIG(INTIO & WDTDIS & PWRTEN & MCLRDIS & UNPROTECT & BORDIS & IESODIS & FCMDIS)
+
+int Dlay; //LED Time on Delay variable
+char ADCValue;
+
 
 unsigned char state;
 void SysInit(void);
@@ -62,14 +68,14 @@ void main(void)
      char str[4];
 
       //Start A/D Conversion
-     ADCON0bits.GO = 1; 
+     ADCON0bits.GO = 1;
      while (ADCON0bits.GO ==1){}; //GO bit automatically clears
      volt = ADRESH;
      volt=(volt<<8) | ADRESL; //Math needs to be done in the int variable
      if(volt==1023) //Fix roundoff error
         volt=1022;
      sprintf(str,"%04d",volt*49/10); //Approximate conversion to 0-5V
-      
+
      LCDGoto(0,1);
      isLeftBtnPressed();
      isRightBtnPressed();
@@ -83,7 +89,7 @@ void main(void)
                 LCDPutChar(str[1]);
                 LCDPutChar(str[2]);
                 LCDPutChar(str[3]);
-                LCDPutChar('V');        
+                LCDPutChar('V');
                 break;
             case EXTENDED:
                 LCDWriteStr("Extended");
@@ -91,8 +97,24 @@ void main(void)
             case BAT_SAVER:
                 LCDWriteStr("Battery Saver");
                 break;
-            case TEST_A:
-                LCDWriteStr("Placeholder A");
+            case PWM:
+                NOP();
+                for (Dlay = 0; Dlay < 6666; Dlay++); //100 ms between
+                NOP();  //Samples
+                GODONE = 1; //Read Pot Value
+                while (GODONE);
+                ADCValue = ADRESH; //Read in ADC Value
+                if (ADCValue > 0x80){ //go Forwards{
+                  CCPR1L = (ADCValue - 80) >> 1;
+                  CCP1CON = 0b01001110;
+                  TRISC = 0b011011; // RC5/RC2 Output, RC3/RC4 Input
+                } else { // Go in Reverse
+                  CCPR1L = (ADCValue ^ 0x7F) >> 1;
+                  CCP1CON = 0b11001110;
+                  TRISC = 0b100111; //RC5/RC2 Output, RC3/RC4 Input
+                } //fi
+              } //elihw
+            //end motor
                 break;
             case TEST_B:
                 LCDWriteStr("Placeholder B");
@@ -107,7 +129,7 @@ void main(void)
 void SysInit(void)
 {
     //OSCCON=0b01010110; //4 MHz internal oscillator
-                        // 16 MHz internal: 0b01110110; 
+                        // 16 MHz internal: 0b01110110;
     OSCCON = 0b01110110;
 
     //Set up buttons
@@ -122,11 +144,27 @@ void SysInit(void)
     ADCON2bits.ADCS=100; //FOSC/32
     ADCON2bits.ADFM=1; //Left justified
     ADCON0bits.ADON=1; //Turn on A/D
-    
-    //ANSELAbits.ANSA0 = 1;
-    //TRISAbits.RA0 = 1; //Analog in
-    //ADCON0 = 0b00000000;
-    
+
+    //Set up PWM
+    PORTC = 0;
+    CMCON0 = 7; //Turn off Comparators
+    ANSEL = 1<<3; //RA4 (AN3) is the ADC Input
+
+    ADCON0 = 0b00001101;
+      //Turn on the ADC
+      //Bit 7 - Left Justified Sample
+      //Bit 6 - Use VDD
+      //Bit 4:2 - RA4
+      //Bit 1 - Do not Start
+      //Bit 0 - Turn on ADC
+
+    TMR2 = 0; //TMR2 Provides PWM Period
+    PR2 = 64; //15 kHz PWM Freq
+
+    T2CON = 0b0000100; //Enable TMR2
+
+    CCPR1L = 0; //0 Duty Cycle to start off
+
     //Set up LCD
     ANSELD = 0x00;
     TRISD = 0x00; //Digital out
