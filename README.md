@@ -4,5 +4,10 @@ Duke University
 
 Edited from ChiefWiggum Computer (Mark Chen mjc61)
 
-PWM Development Branch (to build and test PWM)
+Timer Development Branch
 
+# Goal of Timer Branch
+* Create Timers to control sensor data aquisition
+* RX pins must be pulled HIGH for 20 us
+* Max Freq is every 50 ms
+* Operating Freq is 4 MHz
