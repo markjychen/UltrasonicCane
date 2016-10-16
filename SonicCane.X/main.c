@@ -41,12 +41,6 @@
 #define TEST_A 3
 #define TEST_B 4
 
-__CONFIG(INTIO & WDTDIS & PWRTEN & MCLRDIS & UNPROTECT & BORDIS & IESODIS & FCMDIS)
-
-int Dlay; //LED Time on Delay variable
-char ADCValue;
-
-
 unsigned char state;
 void SysInit(void);
 
@@ -97,28 +91,6 @@ void main(void)
             case BAT_SAVER:
                 LCDWriteStr("Battery Saver");
                 break;
-            case PWM:
-                NOP();
-                for (Dlay = 0; Dlay < 6666; Dlay++); //100 ms between
-                NOP();  //Samples
-                GODONE = 1; //Read Pot Value
-                while (GODONE);
-                ADCValue = ADRESH; //Read in ADC Value
-                if (ADCValue > 0x80){ //go Forwards{
-                  CCPR1L = (ADCValue - 80) >> 1;
-                  CCP1CON = 0b01001110;
-                  TRISC = 0b011011; // RC5/RC2 Output, RC3/RC4 Input
-                } else { // Go in Reverse
-                  CCPR1L = (ADCValue ^ 0x7F) >> 1;
-                  CCP1CON = 0b11001110;
-                  TRISC = 0b100111; //RC5/RC2 Output, RC3/RC4 Input
-                } //fi
-              } //elihw
-            //end motor
-                break;
-            case TEST_B:
-                LCDWriteStr("Placeholder B");
-                break;
             default:
                 //add error
                 break;
@@ -144,26 +116,6 @@ void SysInit(void)
     ADCON2bits.ADCS=100; //FOSC/32
     ADCON2bits.ADFM=1; //Left justified
     ADCON0bits.ADON=1; //Turn on A/D
-
-    //Set up PWM
-    PORTC = 0;
-    CMCON0 = 7; //Turn off Comparators
-    ANSEL = 1<<3; //RA4 (AN3) is the ADC Input
-
-    ADCON0 = 0b00001101;
-      //Turn on the ADC
-      //Bit 7 - Left Justified Sample
-      //Bit 6 - Use VDD
-      //Bit 4:2 - RA4
-      //Bit 1 - Do not Start
-      //Bit 0 - Turn on ADC
-
-    TMR2 = 0; //TMR2 Provides PWM Period
-    PR2 = 64; //15 kHz PWM Freq
-
-    T2CON = 0b0000100; //Enable TMR2
-
-    CCPR1L = 0; //0 Duty Cycle to start off
 
     //Set up LCD
     ANSELD = 0x00;
