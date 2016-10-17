@@ -1,27 +1,6 @@
-// Finite State Machine
-//
-//
-//         Initialization
-//            |
-//            |
-//            |
-//            V
-//          Standard (loop)       ------ (R btn) ---->  Extended
-//             ^                 <-------(L btn) ------    |
-//             |                                           |
-//             |                                    (R btn)
-//             |                                           |
-//             |                                           |
-//             |  <--------------------- (L btn) ----------|
-//             --------------- <------- (R btn) -----Battery Saver
-
-
-
-
-
-
-
-
+/*
+ *  PWM Development Branch
+ */
 
 #include<stdio.h>
 #include "Lcd.h"
@@ -37,11 +16,9 @@
 
 #define STANDARD 0
 #define EXTENDED 1
-#define BAT_SAVER 2
-#define TEST_A 3
-#define TEST_B 4
+#define PWM 2
 
-__CONFIG(INTIO & WDTDIS & PWRTEN & MCLRDIS & UNPROTECT & BORDIS & IESODIS & FCMDIS)
+//__CONFIG(INTIO & WDTDIS & PWRTEN & MCLRDIS & UNPROTECT & BORDIS & IESODIS & FCMDIS)
 
 int Dlay; //LED Time on Delay variable
 char ADCValue;
@@ -82,7 +59,7 @@ void main(void)
      Delay10KTCYx(10);
         //delay(100);
 
-     switch (state%5){
+     switch (state%3){
             case STANDARD:
                LCDPutChar(str[0]);
                LCDPutChar('.');
@@ -94,15 +71,13 @@ void main(void)
             case EXTENDED:
                 LCDWriteStr("Extended");
                 break;
-            case BAT_SAVER:
-                LCDWriteStr("Battery Saver");
-                break;
             case PWM:
-                NOP();
+                LCDWriteStr("PWM");
+                Nop();
                 for (Dlay = 0; Dlay < 6666; Dlay++); //100 ms between
-                NOP();  //Samples
-                GODONE = 1; //Read Pot Value
-                while (GODONE);
+                Nop();  //Samples
+                ADCON0bits.GO = 1; //Read Pot Value
+                while (ADCON0bits.GO);
                 ADCValue = ADRESH; //Read in ADC Value
                 if (ADCValue > 0x80){ //go Forwards{
                   CCPR1L = (ADCValue - 80) >> 1;
@@ -111,13 +86,10 @@ void main(void)
                 } else { // Go in Reverse
                   CCPR1L = (ADCValue ^ 0x7F) >> 1;
                   CCP1CON = 0b11001110;
+                  
                   TRISC = 0b100111; //RC5/RC2 Output, RC3/RC4 Input
-                } //fi
-              } //elihw
+                } //fi //elihw
             //end motor
-                break;
-            case TEST_B:
-                LCDWriteStr("Placeholder B");
                 break;
             default:
                 //add error
@@ -141,14 +113,14 @@ void SysInit(void)
     ANSELAbits.ANSA0 = 1;
     TRISAbits.RA0 = 1; //Analog in
     ADCON2bits.ACQT=001; //2 TAD
-    ADCON2bits.ADCS=100; //FOSC/32
+    ADCON2bits.ADCS=010; //FOSC/32  //was 100 while running ADC test; 010 from lab
     ADCON2bits.ADFM=1; //Left justified
     ADCON0bits.ADON=1; //Turn on A/D
 
     //Set up PWM
     PORTC = 0;
-    CMCON0 = 7; //Turn off Comparators
-    ANSEL = 1<<3; //RA4 (AN3) is the ADC Input
+    //CMCON0 = 7; //Turn off Comparators
+    //ANSELA = 1<<3; //RA4 (AN3) is the ADC Input
 
     ADCON0 = 0b00001101;
       //Turn on the ADC
