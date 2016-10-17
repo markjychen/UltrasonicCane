@@ -78,7 +78,7 @@ void main(void)
                     //Poll the TOIF flag to see if TMR0 has overflowed
                     if (INTCONbits.T0IF){
                         counter++; //if TOIF = 1 increment counter by 1
-                        INTCONbits = 0; //clear TOIF so next overflow can be detected
+                        INTCONbits.T0IF = 0; //clear TOIF so next overflow can be detected
                     }
                 }
                 break;
