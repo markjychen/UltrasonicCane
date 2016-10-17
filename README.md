@@ -11,3 +11,6 @@ Timer Development Branch
 * RX pins must be pulled HIGH for 20 us
 * Max Freq is every 50 ms
 * Operating Freq is 4 MHz
+
+# Current Status:
+* Changing all the bits from pdf general version to PIC18 Family version
