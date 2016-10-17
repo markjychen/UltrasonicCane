@@ -1,5 +1,43 @@
 /*
     Testing the Timer0
+
+    Math behind it: 8 bits mode, clock source from prescaler
+
+    Prescaler = FCPU/256 (FCPU = Fosc/4)
+    Overflow INT enabled
+
+    Prescaler: T0PS<2:0>
+    111 = 1:256
+    110 = 1:128
+    101 = 1:64
+    100 = 1:32
+    011 = 1:16
+    010 = 1:8
+    001 = 1:4
+    000 = 1:2
+
+    FCPU = XTAL / 4 = 4MHz/4 = 1 MHz
+
+    Time period = 1/(1E9) = 1 nS
+
+    Let prescaler = 100 (1:32)
+
+    Prescaler = FCPU / 256 = 1 nS * 32 = 32 nS
+    Overflow Period = 32 * 256 = 8192 ns = 8.192 uS (Each overflow takes 32 counts)
+
+    So we need 20 uS, so we need ~ 3 overflows (for ~24 us)
+
+    Code Skeleton:
+    To fire a sensor
+        initialize Timer0   //note: do NOT want interrupt routine (ISR)
+        Turn output HIGH
+        Let it run for X amt of overflows (>= 20uS)
+        Turn output LOW
+        Turn off Timer0
+
+
+
+
 */
 
 #include<stdio.h>
@@ -7,6 +45,7 @@
 #include <delays.h>
 #include <p18f46k22.h>
 #include <stdlib.h>
+#include <stdio.h>
 #include "General.h"
 #include "Serial.h"
 
@@ -20,10 +59,14 @@ unsigned char counter; //counter variable to count # of TMR overflow
 #pragma config WDTEN = OFF      // Watch Dog Timer disabled. SWDTEN no effect
 #pragma config XINST = OFF      // Instruction set Extension and indexed Addressing mode disabled
 
+
+//Define Statements
 #define STANDARD 0
 #define EXTENDED 1
 #define TMR_RUN 2
 
+#define One_Sec 0x80
+#define Timer1 0x89 //So thius is do not touch?
 
 unsigned char state;
 void SysInit(void);
@@ -63,12 +106,12 @@ void SysInit(void)
 
 void tmr0Init(void){
     //Set up Timer0
-    //Assigns prescaler to WDT so TMR0 increments as 1:1 ratio with WDT
-    T0CONbits.PSA = 1; //Clear the TMR0 register, prescaler 1:1
-    T0CONbits.T0CS = 0;
-    T0CONbits.TMR0ON = 1;
-    TMR0H = 0;
+    TMR0H = -1; //some HIGH value, so like 20 uS?
     TMR0L = 0;
+    T0CON = -1; //Some bits to represent config...
+
+    //TMR0IF flag is the overflow
+    //Interrupt can be masked by clearing the TMR0IE
 }
 
 void btnInit(void){
