@@ -1,5 +1,5 @@
 /*
-    Testing the Timer0
+    Testing the Serial Connection
 */
 
 #include<stdio.h>
@@ -10,21 +10,13 @@
 #include "General.h"
 #include "Serial.h"
 
-//Configure the device
-//__CONFIG(INTIO & WDTDIS & PWRTDIS & MCLRDIS & UNPROTECT & BORDIS & IESODIS & FCMDIS);
-
-//Configure Data Memory
-unsigned char counter; //counter variable to count # of TMR overflow
-
 #pragma config FOSC = INTIO67   // Internal OSC block, Port Function on RA6/7
 #pragma config WDTEN = OFF      // Watch Dog Timer disabled. SWDTEN no effect
 #pragma config XINST = OFF      // Instruction set Extension and indexed Addressing mode disabled
 
 #define STANDARD 0
 #define EXTENDED 1
-#define TMR_RUN 2
-#define TEST_A 3
-#define TEST_B 4
+#define SERIAL 2
 
 unsigned char state;
 void SysInit(void);
@@ -61,7 +53,7 @@ void main(void)
      Delay10KTCYx(10);
         //delay(100);
 
-     switch (state%5){
+     switch (state%3){
             case STANDARD:
                LCDPutChar(str[0]);
                LCDPutChar('.');
@@ -73,15 +65,9 @@ void main(void)
             case EXTENDED:
                 LCDWriteStr("Extended");
                 break;
-            case TMR_RUN:
-                while (1){ //Stay forever in timer mode for debug
-                    //Poll the TOIF flag to see if TMR0 has overflowed
-                    if (INTCONbits.T0IF){
-                        counter++; //if TOIF = 1 increment counter by 1
-                        INTCONbits.T0IF = 0; //clear TOIF so next overflow can be detected
-                    }
-                }
-                break;
+	    case SERIAL_MODE:
+	    	LCDWriteStr("Serial");
+		break;
             default:
                 //add error
                 break;
@@ -94,14 +80,6 @@ void SysInit(void)
     //OSCCON=0b01010110; //4 MHz internal oscillator
                         // 16 MHz internal: 0b01110110;
     OSCCON = 0b01110110;
-
-    //Set up Timer0
-    //Assigns prescaler to WDT so TMR0 increments as 1:1 ratio with WDT
-    T0CONbits.PSA = 1; //Clear the TMR0 register, prescaler 1:1
-    T0CONbits.T0CS = 0;
-    T0CONbits.TMR0ON = 1;
-    TMR0H = 0;
-    TMR0L = 0;
 
     //Set up buttons
     ANSELBbits.ANSB0=0; //Digital
