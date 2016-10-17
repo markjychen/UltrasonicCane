@@ -11,8 +11,7 @@
 #include "Serial.h"
 
 //Configure the device
-__CONFIG(INTIO & WDTDIS & PWRTDIS & MCLRDIS &
-    UNPROTECT & BORDIS & IESODIS & FCMDIS);
+//__CONFIG(INTIO & WDTDIS & PWRTDIS & MCLRDIS & UNPROTECT & BORDIS & IESODIS & FCMDIS);
 
 //Configure Data Memory
 unsigned char counter; //counter variable to count # of TMR overflow
@@ -77,9 +76,9 @@ void main(void)
             case TMR_RUN:
                 while (1){ //Stay forever in timer mode for debug
                     //Poll the TOIF flag to see if TMR0 has overflowed
-                    if (T0IF){
+                    if (INTCONbits.T0IF){
                         counter++; //if TOIF = 1 increment counter by 1
-                        TOIF = 0; //clear TOIF so next overflow can be detected
+                        INTCONbits = 0; //clear TOIF so next overflow can be detected
                     }
                 }
                 break;
@@ -97,12 +96,12 @@ void SysInit(void)
     OSCCON = 0b01110110;
 
     //Set up Timer0
-    TMR0 = 0; //Clear the TMR0 register
-
-    //Configure TMR0
-    //This uses internal clock
     //Assigns prescaler to WDT so TMR0 increments as 1:1 ratio with WDT
-    OPTION = 0B00001000;
+    T0CONbits.PSA = 1; //Clear the TMR0 register, prescaler 1:1
+    T0CONbits.T0CS = 0;
+    T0CONbits.TMR0ON = 1;
+    TMR0H = 0;
+    TMR0L = 0;
 
     //Set up buttons
     ANSELBbits.ANSB0=0; //Digital
