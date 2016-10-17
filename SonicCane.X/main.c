@@ -23,8 +23,7 @@ unsigned char counter; //counter variable to count # of TMR overflow
 #define STANDARD 0
 #define EXTENDED 1
 #define TMR_RUN 2
-#define TEST_A 3
-#define TEST_B 4
+
 
 unsigned char state;
 void SysInit(void);
@@ -61,7 +60,7 @@ void main(void)
      Delay10KTCYx(10);
         //delay(100);
 
-     switch (state%5){
+     switch (state%3){
             case STANDARD:
                LCDPutChar(str[0]);
                LCDPutChar('.');
