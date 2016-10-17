@@ -31,7 +31,7 @@ void SysInit(void);
 void tmr0Init(void);
 
 void btnInit(void);
-void LCDInit(void);
+void LCDUCInit(void);
 unsigned char isLeftBtnPressed(void);
 unsigned char isRightBtnPressed(void);
 
@@ -46,7 +46,7 @@ void main(void)
 
   while(1)
   {
-      LCDWrite("LOLOLOLOL")
+      LCDWriteStr("LOLOLOLOL");
   };
 }
 
@@ -57,7 +57,7 @@ void SysInit(void)
     OSCCON = 0b01110110;
 
     btnInit();
-    LCDInit();
+    LCDUCInit();
     state = 0;
 }
 
@@ -78,7 +78,7 @@ void btnInit(void){
     TRISBbits.RB0=1; //Input
 }
 
-void LCDInit(void){
+void LCDUCInit(void){
     //Set up LCD
     ANSELD = 0x00;
     TRISD = 0x00; //Digital out
