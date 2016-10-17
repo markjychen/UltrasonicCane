@@ -28,6 +28,10 @@ unsigned char counter; //counter variable to count # of TMR overflow
 unsigned char state;
 void SysInit(void);
 
+void tmr0Init(void);
+
+void btnInit(void);
+void LCDInit(void);
 unsigned char isLeftBtnPressed(void);
 unsigned char isRightBtnPressed(void);
 
@@ -36,55 +40,13 @@ void main(void)
   SysInit();
   LCDClear();
   LCDGoto(0, 0);
-  LCDWriteStr("Hello World!");
+  LCDWriteStr("Testing Timer0");
   printf("Hello!\n");
+  LCDGoto(1, 0);
 
   while(1)
   {
-    // Set up variables
-     unsigned int volt; //16 bits
-     char str[4];
-
-      //Start A/D Conversion
-     ADCON0bits.GO = 1;
-     while (ADCON0bits.GO ==1){}; //GO bit automatically clears
-     volt = ADRESH;
-     volt=(volt<<8) | ADRESL; //Math needs to be done in the int variable
-     if(volt==1023) //Fix roundoff error
-        volt=1022;
-     sprintf(str,"%04d",volt*49/10); //Approximate conversion to 0-5V
-
-     LCDGoto(0,1);
-     isLeftBtnPressed();
-     isRightBtnPressed();
-     Delay10KTCYx(10);
-        //delay(100);
-
-     switch (state%3){
-            case STANDARD:
-               LCDPutChar(str[0]);
-               LCDPutChar('.');
-                LCDPutChar(str[1]);
-                LCDPutChar(str[2]);
-                LCDPutChar(str[3]);
-                LCDPutChar('V');
-                break;
-            case EXTENDED:
-                LCDWriteStr("Extended");
-                break;
-            case TMR_RUN:
-                while (1){ //Stay forever in timer mode for debug
-                    //Poll the TOIF flag to see if TMR0 has overflowed
-                    if (INTCONbits.T0IF){
-                        counter++; //if TOIF = 1 increment counter by 1
-                        INTCONbits.T0IF = 0; //clear TOIF so next overflow can be detected
-                    }
-                }
-                break;
-            default:
-                //add error
-                break;
-    }
+      LCDWrite("LOLOLOLOL")
   };
 }
 
@@ -94,6 +56,12 @@ void SysInit(void)
                         // 16 MHz internal: 0b01110110;
     OSCCON = 0b01110110;
 
+    btnInit();
+    LCDInit();
+    state = 0;
+}
+
+void tmr0Init(void){
     //Set up Timer0
     //Assigns prescaler to WDT so TMR0 increments as 1:1 ratio with WDT
     T0CONbits.PSA = 1; //Clear the TMR0 register, prescaler 1:1
@@ -101,41 +69,34 @@ void SysInit(void)
     T0CONbits.TMR0ON = 1;
     TMR0H = 0;
     TMR0L = 0;
+}
 
+void btnInit(void){
     //Set up buttons
     ANSELBbits.ANSB0=0; //Digital
     TRISAbits.RA4=1; //Input
     TRISBbits.RB0=1; //Input
+}
 
-    //Set up A/D on AN0
-    ANSELAbits.ANSA0 = 1;
-    TRISAbits.RA0 = 1; //Analog in
-    ADCON2bits.ACQT=001; //2 TAD
-    ADCON2bits.ADCS=100; //FOSC/32
-    ADCON2bits.ADFM=1; //Left justified
-    ADCON0bits.ADON=1; //Turn on A/D
-
+void LCDInit(void){
     //Set up LCD
     ANSELD = 0x00;
     TRISD = 0x00; //Digital out
-
     LCDInit(); //Start LCD
     LCDGoto(0,1);
     LCDWriteStr("Init mode");
-
-    state = 0;
 }
 
 unsigned char isLeftBtnPressed(void){
-  if (PORTAbits.RA4 == 0){
-      Delay10KTCYx(10);
-      state=0;
-      LCDGoto(0,1);
-      LCDWriteStr("                ");
-      LCDGoto(0,1);
-      return 1;
- }
- return 0;
+    if (PORTAbits.RA4 == 0){
+        Delay10KTCYx(10);
+        state=0;
+        LCDGoto(0,1);
+        LCDWriteStr("                ");
+        LCDGoto(0,1);
+        return 1;
+    }
+    return 0;
 }
 
 unsigned char isRightBtnPressed(void){
