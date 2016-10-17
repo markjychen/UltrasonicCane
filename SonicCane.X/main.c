@@ -16,13 +16,29 @@
 
 #define STANDARD 0
 #define EXTENDED 1
-#define SERIAL 2
+#define SERIAL_MODE 2
 
 unsigned char state;
 void SysInit(void);
 
 unsigned char isLeftBtnPressed(void);
 unsigned char isRightBtnPressed(void);
+
+void High_Priority_ISR(void);
+
+#pragma code InterruptVectorHigh = 0x08
+void InterruptVectorHigh (void)
+{
+  _asm
+    goto High_Priority_ISR 			// Jump to ISR Interrupt function.
+  _endasm				// ISR name is unimportant but must match.
+}
+
+#pragma interrupt High_Priority_ISR  // "Interrupt" pragma for high priority
+void High_Priority_ISR(void)		   // Interrupt function. Name is unimportant. 
+{
+    Serial_ISR();
+}
 
 void main(void)
 {
@@ -36,7 +52,8 @@ void main(void)
   {
     // Set up variables
      unsigned int volt; //16 bits
-     char str[4];
+     char input; //for serial
+     char str[4];// for voltage output
 
       //Start A/D Conversion
      ADCON0bits.GO = 1;
@@ -66,7 +83,26 @@ void main(void)
                 LCDWriteStr("Extended");
                 break;
 	    case SERIAL_MODE:
-	    	LCDWriteStr("Serial");
+	    	LCDWriteStr("Serial ");
+            LCDPutChar(str[0]);
+               LCDPutChar('.');
+                LCDPutChar(str[1]);
+                LCDPutChar(str[2]);
+                LCDPutChar(str[3]);
+                LCDPutChar('V');
+            if(SERRxDatAvail()){
+                input=SERRxGet();
+                if(input==' '){
+                    SERTxSave('\r');
+                    SERTxSave('\n');
+                    SERTxSave(str[0]);
+                    SERTxSave('.');
+                    SERTxSave(str[1]);
+                    SERTxSave(str[2]);
+                    SERTxSave(str[3]);
+                    SERTxSave('V');
+                }
+            }
 		break;
             default:
                 //add error
@@ -102,6 +138,24 @@ void SysInit(void)
     LCDGoto(0,1);
     LCDWriteStr("Init mode");
 
+    //Initialize Serial port
+    TRISCbits.RC6=1;
+    TRISCbits.RC7=1;
+    ANSELC=0x00;
+
+    RCONbits.IPEN	= 1; //Priority levels
+    INTCONbits.GIEH = 1; //Enable interrupts
+    IPR1bits.RC1IP = 1; //High priority
+    IPR1bits.TX1IP = 1;
+
+    SERInit();			 // Initialized Serial Come
+    SERTxSave('\r');		 // Carriage return
+    SERTxSave('\n');		 // Line Feed
+
+    SERTxSave('\r');
+    SERTxSave('\n');
+    SERSendStr("Voltage:");
+    
     state = 0;
 }
 
