@@ -89,7 +89,10 @@ void main(void)
 
   while(1)
   {
-      LCDWriteStr("LOLOLOLOL");
+      if (T01F){
+          counter++;
+          T0IF = 0;
+      }
   };
 }
 
@@ -106,9 +109,16 @@ void SysInit(void)
 
 void tmr0Init(void){
     //Set up Timer0
-    TMR0H = -1; //some HIGH value, so like 20 uS?
+    //TMR0H = -1; //some HIGH value, so like 20 uS?
     TMR0L = 0;
-    T0CON = -1; //Some bits to represent config...
+    //T0CON = -1; //Some bits to represent config...
+    T0CS = 0;
+    T0SE = 0;
+
+
+    // List of Registers Associated with Timer0
+    //INTCON
+    //INTCON2
 
     //TMR0IF flag is the overflow
     //Interrupt can be masked by clearing the TMR0IE
