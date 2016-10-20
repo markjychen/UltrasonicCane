@@ -111,7 +111,7 @@ void main(void)
   printf("Hello!\n");
   LCDGoto(1, 0);
 
-  T0CONbits.TMR0ON = 1;   //1 = ON, 0 = OFF
+  //T0CONbits.TMR0ON = 1;   //1 = ON, 0 = OFF
 
   while(1)
   {
@@ -133,6 +133,7 @@ void SysInit(void)
 
     btnInit();
     LCDUCInit();
+    tmr1Init();
     state = 0;
 }
 
