@@ -91,11 +91,12 @@ void main(void)
 
   while(1)
   {
+      LCDGoto(0, 1);
       if (INTCONbits.T0IF){
           counter++;
-          PORTAbits.RA6 = 1;//RA6 HIGH
+          PORTAbits.RA1 = 1;//RA6 HIGH
           INTCONbits.T0IF = 0;
-          PORTAbits.RA6 = 0;
+          PORTAbits.RA1 = 0;
       }
       LCDPutByte(counter);
   };
@@ -109,6 +110,7 @@ void SysInit(void)
 
     btnInit();
     LCDUCInit();
+    tmr0Init();
     state = 0;
 }
 
