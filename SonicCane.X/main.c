@@ -87,12 +87,17 @@ void main(void)
   printf("Hello!\n");
   LCDGoto(1, 0);
 
+  T0CONbits.TMR0ON = 1;   //1 = ON, 0 = OFF
+
   while(1)
   {
-      if (T01F){
+      if (INTCONbits.T0IF){
           counter++;
-          T0IF = 0;
+          PORTAbits.RA6 = 1;//RA6 HIGH
+          INTCONbits.T0IF = 0;
+          PORTAbits.RA6 = 0;
       }
+      LCDPutByte(counter);
   };
 }
 
@@ -108,14 +113,19 @@ void SysInit(void)
 }
 
 void tmr0Init(void){
-    //Set up Timer0
-    //TMR0H = -1; //some HIGH value, so like 20 uS?
-    TMR0L = 0;
-    //T0CON = -1; //Some bits to represent config...
-    T0CS = 0;
-    T0SE = 0;
+    //Timer0 is SHUT DOWN in sleep mode
+    T0CONbits.T0PS0 = 0;    //Pre-scaler bits
+    T0CONbits.T0PS1 = 0;
+    T0CONbits.T0PS2 = 0;
+    
+    T0CONbits.PSA = 0;      //Prescaler Assignment bit (1=Timer0 PS not assigned) (0= PS assigned))
+    T0CONbits.T0SE = 0;     //Edge select bit; 0 = rising edge, 1 = falling edge
+    T0CONbits.T0CS = 0;     //Clock select (0 = internal, 1 = xtal_)
+   
+    T0CONbits.T08BIT = 1;   //1 = 8bit timer, 0 = 16bit timer
+    T0CONbits.TMR0ON = 0;   //1 = ON, 0 = OFF
 
-
+    INTCONbits.TMR0IF = 0;   //clear overflow flag 
     // List of Registers Associated with Timer0
     //INTCON
     //INTCON2
