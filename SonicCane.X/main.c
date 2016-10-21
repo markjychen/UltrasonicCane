@@ -64,7 +64,7 @@ void Tmr0Init(void){
     T0CONbits.T0CS=0; //Use internal clock (4 MHz/4)
     T0CONbits.T08BIT=0; //16 bit counter
     T0CONbits.PSA=1; //Don't use prescaler (1:1)
-    T0CONbits.SE = 0;
+    T0CONbits.T0SE = 0;
     TMR0H=tmrh;
     TMR0L=tmrl;
 }
