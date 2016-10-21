@@ -11,28 +11,30 @@
 #pragma config FOSC=INTIO67
 #pragma config XINST=OFF
 
+void TMR0_ISR(void);
+void SysInit(void);
+void Tmr0Init(void);
+void LEDInit(void);
+void interruptEnabler(void);
+
+char tmrh = 0x63;
+char tmrl = 0xC0; //40 ms(2^16-4e-2/(1/(4e6/4)))
+unsigned char pattern = 0b00001010;
+
 //High priority interrupt
 #pragma code InterruptVectorHigh = 0x08
+#pragma interrupt High_Priority_ISR
+
 void InterruptVectorHigh (void)
 {
   _asm
     goto High_Priority_ISR
   _endasm
 }
-#pragma interrupt High_Priority_ISR
 void High_Priority_ISR(void)
 {
-    TRM0_ISR(); //Call real-time clock service routine
+    TMR0_ISR(); //Call real-time clock service routine
 }
-
-void TMR0_ISR(void);
-void SysInit(void);
-void Tmr0Init(void);
-void interruptEnabler(void);
-
-char tmrh = 0x63;
-char tmrl = 0xC0; //40 ms(2^16-4e-2/(1/(4e6/4)))
-unsigned char pattern = 0b00001010;
 
 void SysInit(void)
 {
