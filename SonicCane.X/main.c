@@ -20,6 +20,7 @@ void interruptEnabler(void);
 char tmrh = 0x63;
 char tmrl = 0xC0; //40 ms(2^16-4e-2/(1/(4e6/4)))
 unsigned char pattern = 0b00001010;
+int LEDflag = 0; //LED off;
 
 //High priority interrupt
 #pragma code InterruptVectorHigh = 0x08
@@ -56,12 +57,14 @@ void LEDInit(void){
     ANSELB=0b00000000; //Digital IO
     LATB=0b00000000; //LEDs off
     TRISB=0b00000000; //LEDs are outputs
+    LEDflag = 0;
 }
 void Tmr0Init(void){
     //Set up timer
     T0CONbits.T0CS=0; //Use internal clock (4 MHz/4)
     T0CONbits.T08BIT=0; //16 bit counter
     T0CONbits.PSA=1; //Don't use prescaler (1:1)
+    T0CONbits.SE = 0;
     TMR0H=tmrh;
     TMR0L=tmrl;
 }
