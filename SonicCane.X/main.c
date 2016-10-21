@@ -28,9 +28,11 @@ void High_Priority_ISR(void)
 void TMR0_ISR(void);
 void SysInit(void);
 void Tmr0Init(void);
+void interruptEnabler(void);
 
 char tmrh = 0x63;
 char tmrl = 0xC0; //40 ms(2^16-4e-2/(1/(4e6/4)))
+unsigned char pattern = 0b00001010;
 
 void SysInit(void)
 {
@@ -44,7 +46,7 @@ void SysInit(void)
     //Set up Tmr0
     Tmr0Init();
     LEDInit();
-
+    interruptEnabler();
     //Set up LCD
     ANSELD = 0x00;
     TRISD = 0x00; //Digital out
@@ -67,6 +69,12 @@ void Tmr0Init(void){
     T0CONbits.PSA=1; //Don't use prescaler (1:1)
     TMR0H=tmrh;
     TMR0L=tmrl;
+}
+void interruptEnabler(void){
+    RCONbits.IPEN=1;            // Allow interrupt priorities
+    INTCONbits.TMR1IF = 0;        // Clear any pending Timer 1 Interrupt indication
+    INTCONbits.TMR0IE = 1;        // Enable Timer 1 Interrupt
+    INTCONbits.GIE=1;           // Enable interrupts
 }
 
 //Called every second by the interrupt
