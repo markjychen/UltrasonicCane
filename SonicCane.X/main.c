@@ -17,9 +17,9 @@
 void SysInit(void);
 
 void SysInit(void){
-    
+
     OSCCON = 0b00001010;    //8 MHz internal
-            
+
     TRISCbits.TRISC7 = 0;
     CCPTMRS1bits.C4TSEL = 0b00;
     CCPR2 = 0x65;
@@ -29,9 +29,13 @@ void SysInit(void){
     CCP4CONbits.CCP4M1 = 0;
     //CCPR4L = ;
     //CCPR4H = ;
-    
+
     //Enable Timer2
     T2CONbits.TMR2ON = 1;
+
+    //Enable output
+    TRISCbits.TRISC1 = 0; //make CCP2 pin output
+    TRISCbits.TRISC2 = 0; //make CCP1 pin output
 }
 
 void main(void){
