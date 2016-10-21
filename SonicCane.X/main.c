@@ -61,7 +61,7 @@ unsigned char counter; //counter variable to count # of TMR overflow
 
 
 //Other  stuff from https://github.com/g4lvanix/PIC-tutorials/blob/master/Timer.X/main.c
-#pragma config PLLEN = OFF
+/*#pragma config PLLEN = OFF
 #pragma config PCLKEN = ON
 #pragma config FCMEN = OFF
 #pragma config IESO = OFF
@@ -78,10 +78,10 @@ unsigned char counter; //counter variable to count # of TMR overflow
 // CONFIG3H
 #pragma config HFOFST = ON      // HFINTOSC Fast Start-up bit (HFINTOSC starts clocking the CPU without waiting for the oscillator to stablize.)
 #pragma config MCLRE = ON
+*/
 
 
-
-#endif /* end of include guard:  */
+//#endif /* end of include guard:  */
 
 
 //Define Statements
@@ -96,6 +96,8 @@ unsigned char state;
 void SysInit(void);
 
 void tmr0Init(void);
+void Timer_Out(void);
+void High_Priority_ISR(void);
 
 void btnInit(void);
 void LCDUCInit(void);
@@ -112,6 +114,13 @@ void main(void)
   LCDGoto(1, 0);
 
   //T0CONbits.TMR0ON = 1;   //1 = ON, 0 = OFF
+      //Set up LEDs
+    ANSELB=0b00000000; //Digital IO
+    LATB=0b00000000; //LEDs off
+    TRISB=0b00000000; //LEDs are outputs
+    
+    char tmrh = 0x63;
+    char tmrl = 0xC0; 
 
   while(1)
   {
@@ -133,7 +142,7 @@ void SysInit(void)
 
     btnInit();
     LCDUCInit();
-    tmr1Init();
+    //tmr1Init();
     state = 0;
 }
 
@@ -159,7 +168,7 @@ void tmr0Init(void){
     //Interrupt can be masked by clearing the TMR0IE
 }
 
-void tmr1Init(void){
+/*void tmr1Init(void){
     //Timer1 prescaler 1:8
     T1C0Nbits.T1CKPS1 = 1;
     T1CONbits.T1CKPS0 = 1;
@@ -168,14 +177,29 @@ void tmr1Init(void){
     PIE1bits.TMR1IE = 1;
     //Timer 1 ON
     T1CONbits.TMR1ON = 1;
-}
+}*/
 
 //Set up timer interrupt routine
-void interrupt ISR(void){
+
+#pragma code InterruptVectorHigh = 0x08
+void InterruptVectorHigh (void)
+{
+  _asm
+    goto High_Priority_ISR
+  _endasm
+}
+
+#pragma interrupt High_Priority_ISR
+void High_Priority_ISR(void) 
+{
+    Timer_Out(); //Call real-time clock service routine
+}
+
+void Timer_Out(void){
     //check for timer1 overflow
-    if (PIR1bits.TMR1IF == 1){
+    if (INTCONbits.TMR0IF == 1){
         LATBbits.LATB7 ^= 1; //toggle RB7
-        PIR1bits.TMR1IF = 0; //reset interrupt flag
+        INTCONbits.TMR0IF = 0; //reset interrupt flag
     }
 }
 
