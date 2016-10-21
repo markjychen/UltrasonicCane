@@ -49,13 +49,6 @@ void SysInit(void)
     Tmr0Init();
     LEDInit();
     interruptEnabler();
-    //Set up LCD
-    ANSELD = 0x00;
-    TRISD = 0x00; //Digital out
-
-
-    LCDInit(); //Start LCD
-    LCDWriteStr("Starting clock...");
 }
 
 void LEDInit(void){
@@ -74,7 +67,7 @@ void Tmr0Init(void){
 }
 void interruptEnabler(void){
     RCONbits.IPEN=1;            // Allow interrupt priorities
-    INTCONbits.TMR1IF = 0;        // Clear any pending Timer 1 Interrupt indication
+    INTCONbits.TMR0IF = 0;        // Clear any pending Timer 1 Interrupt indication
     INTCONbits.TMR0IE = 1;        // Enable Timer 1 Interrupt
     INTCONbits.GIE=1;           // Enable interrupts
 }
