@@ -94,6 +94,6 @@ void main(void)
     LCDGoto(0, 1);
     LCDWriteStr("Tmr0 LED RB1");
     while(1){
-	       LATB = 0b00000000; //LEDs off
+	       //LATB = 0b00000000; //LEDs off
     }
 }
