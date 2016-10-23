@@ -1,62 +1,43 @@
-// Finite State Machine
-//
-//
-//         Initialization
-//            |
-//            |
-//            |
-//            V
-//          Standard (loop)       ------ (R btn) ---->  Extended
-//             ^                 <-------(L btn) ------    | 
-//             |                                           | 
-//             |                                    (R btn)  
-//             |                                           | 
-//             |                                           | 
-//             |  <--------------------- (L btn) ----------| 
-//             --------------- <------- (R btn) -----Battery Saver
+/*
+ * BME 464 - Lab A - Station 1
+ *
+ * Blink LEDs to draw a pattern as the board is shaken back and forth
+ * Nick Bottenus - 8/23/12
+ */
 
-
-
-
-
-
-
-
-
-#include<stdio.h>
 #include "Lcd.h"
 #include <delays.h>
 #include <p18f46k22.h>
-#include <stdlib.h>
-#include "General.h"
-#include "Serial.h"
+#include <stdio.h>
 
-#pragma config FOSC = INTIO67   // Internal OSC block, Port Function on RA6/7
-#pragma config WDTEN = OFF      // Watch Dog Timer disabled. SWDTEN no effect
-#pragma config XINST = OFF      // Instruction set Extension and indexed Addressing mode disabled
+#pragma config WDTEN=OFF
+#pragma config FOSC=INTIO67
+#pragma config XINST=OFF
 
-#define STANDARD 0
-#define EXTENDED 1
-#define BAT_SAVER 2
-#define TEST_A 3
-#define TEST_B 4 
+#define LOWBYTE(v)   ((unsigned char) (v))
+#define HIGHBYTE(v)  ((unsigned char) (((unsigned int) (v)) >> 8))
 
-unsigned char state;
-void SysInit(void);
-
-unsigned char isLeftBtnPressed(void);
-unsigned char isRightBtnPressed(void);
+#define STANDARD = 0;
+#define PULSE = 1;
 
 void main(void)
 {
-  SysInit();
-  LCDClear();
-  LCDGoto(0, 0);
-  LCDWriteStr("Hello World!");
-  printf("Hello!\n");
+    unsigned char patterns[] = {0b0001010, 0b0000000};
+    char count=0;
+    char dir = 1;
+    unsigned int volt = 0; 
+    char tmrl = 0x58;   //25 ms (2^16-(2.5e-2/(1/4e6/4)))
+    char tmrh = 0x9E;
+    
+    OSCCON=0b01010110; //4 MHz internal oscillator
 
-  while(1)
-  {
+    SysInit();
+    LCDClear();
+    LCDGoto(0, 0);
+    LCDWriteStr("Hello World!");
+    printf("Hello!\n");
+
+    while(1){
     // Set up variables
      unsigned int volt = 7; //16 bits
      char str[4];
@@ -76,7 +57,7 @@ void main(void)
      Delay10KTCYx(10);
         //delay(100);
 
-     switch (state%5){
+     switch (state%2){
             case STANDARD:
                LCDPutChar(str[0]);
                LCDPutChar('.');
@@ -85,16 +66,8 @@ void main(void)
                 LCDPutChar(str[3]);
                 LCDPutChar('V');        
                 break;
-            case EXTENDED:
-                LCDWriteStr("Extended");
-                break;
-            case BAT_SAVER:
-                LCDWriteStr("Battery Saver");
-                break;
-            case TEST_A:
-                LCDWriteStr("Placeholder A");
-                break;
-            case TEST_B:
+                        
+            case PULSE:
                 LCDWriteStr("Placeholder B");
                 break;
             default:
@@ -109,12 +82,23 @@ void SysInit(void)
     //OSCCON=0b01010110; //4 MHz internal oscillator
                         // 16 MHz internal: 0b01110110; 
     OSCCON = 0b01110110;
+>>>>>>> development
 
-    //Set up buttons
-    ANSELBbits.ANSB0=0; //Digital
-    TRISAbits.RA4=1; //Input
-    TRISBbits.RB0=1; //Input
+    //Set up LEDs
+    ANSELB=0b00000000; //Digital IO
+    LATB=0b00000000; //LEDs off
+    TRISB=0b00000000; //LEDs are outputs
 
+<<<<<<< HEAD
+     //Set up A/D on AN0
+    ANSELAbits.ANSA0 = 1;
+    TRISAbits.RA0 = 1; //Analog in
+    ADCON2bits.ACQT=001; //2 TAD
+    ADCON2bits.ADCS=010; //FOSC/32
+    ADCON2bits.ADFM=1; //Left justified
+    ADCON0bits.ADON=1; //Turn on A/D
+    
+=======
     //Set up A/D on AN1    
     OSCCON=0b01010110; //set to 4 MHz (labA))   
     
@@ -139,30 +123,35 @@ void SysInit(void)
     LCDInit(); //Start LCD
     LCDGoto(0,1);
     LCDWriteStr("Init mode");
+>>>>>>> development
 
-    state = 0;
-}
+    
+    //Set up Timer0
+    T0CONbits.T0CS=0; //Use internal clock (4 MHz/4)
+    T0CONbits.T08BIT=0; //16 bit counter
+    T0CONbits.PSA=1; //Don't use prescaler (1:1)
+    TMR0H=tmrh;
+    TMR0L=tmrl;
 
-unsigned char isLeftBtnPressed(void){
-  if (PORTAbits.RA4 == 0){
-      Delay10KTCYx(10);
-      state=0;
-      LCDGoto(0,1);
-      LCDWriteStr("                ");
-      LCDGoto(0,1);
-      return 1;
- }
- return 0;
-}
+    //
+    
+    while(1){
+        while(INTCONbits.TMR0IF==0){}
+            ADCON0bits.GO = 1;
+            while(ADCON0bits.GO ==1){};
+            volt = ADRESH;
+            volt = (volt<<8) | ADRESL;
+            if (volt == 1023) //Fix roundoff error
+                volt = 1022;
+            DC = 40536 * volt / 1022;
+        
+        INTCONbits.TMR0IF=0; //Reset flag
+        TMR0H=HIGHBYTE(DC);
+        TMR0L=LOWBYTE(DC);
 
-unsigned char isRightBtnPressed(void){
-  if (PORTBbits.RB0 == 0){
-      Delay10KTCYx(10);
-      state++;
-      LCDGoto(0,1);
-      LCDWriteStr("                ");
-      LCDGoto(0,1);
-      return 1;
- }
- return 0;
+        count+=dir; //Increment counter
+        if(count==0||count==sizeof(patterns)-1)
+            dir*=-1;
+        LATB=patterns[count]; //Light LEDs
+    }
 }
