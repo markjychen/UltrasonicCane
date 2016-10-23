@@ -25,7 +25,11 @@ void main(void)
                                 0b00001011,
                                 0b00001110};
      * */
-    unsigned char patterns[] = {0b0001010, 0b0000000};
+    unsigned char dc80[] = {0b0001010, 0b0001010,0b0001010,0b0001010, 0b0000000};
+    unsigned char dc60[] = {0b0001010,0b0001010,0b0001010, 0b0000000, 0b0000000};
+    unsigned char dc40[] = {0b0001010, 0b0001010, 0b0000000, 0b0000000, 0b0000000};
+    unsigned char dc20[] = {0b0001010, 0b0000000,0b0000000,0b0000000,0b0000000};
+    
     char count=0;
     char dir = 1;
     unsigned int volt = 0; //16 bits
@@ -61,21 +65,44 @@ void main(void)
     TMR0H=tmrh;
     TMR0L=tmrl;
 
-    //
+    //Set up LCD
+    ANSELD = 0x00;
+    TRISD = 0x00; //Digital out
+
+    LCDInit(); //Start LCD
+    LCDGoto(0,1);
+    LCDWriteStr("Init mode");
     
     while(1){
+        unsigned char* patterns;//     
+        char str[4];           // initialize
+
         while(INTCONbits.TMR0IF==0){}
-            ADCON0bits.GO = 1;
-            while(ADCON0bits.GO ==1){};
-            volt = ADRESH;
-            volt = (volt<<8) | ADRESL;
-            if (volt == 1023) //Fix roundoff error
-                volt = 1022;
-            DC = 40536 * volt / 1022;
+        ADCON0bits.GO = 1;
+        while(ADCON0bits.GO ==1){};
+        volt = ADRESH;
+        volt = (volt<<8) | ADRESL;
+        if (volt == 1023) //Fix roundoff error
+            volt = 1022;
+        volt = volt%4;
         
+        sprintf(str, "%04d", volt);
+        LCDGoto(0, 1);
+        LCDPutChar(str[0]);
+        
+        switch (volt%4){
+            case 0 : patterns = dc20; break;
+            case 1 : patterns = dc40; break;
+            case 2 : patterns = dc60; break;
+            case 3 : patterns = dc80; break;
+            default : break;
+                        
+        }
+                   
+            
         INTCONbits.TMR0IF=0; //Reset flag
-        TMR0H=HIGHBYTE(DC);
-        TMR0L=LOWBYTE(DC);
+        TMR0H=tmrh;
+        TMR0L=tmrl;
 
         count+=dir; //Increment counter
         if(count==0||count==sizeof(patterns)-1)
