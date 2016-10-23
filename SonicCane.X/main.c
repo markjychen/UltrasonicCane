@@ -34,6 +34,7 @@ unsigned char isBtnPressed(void);
 int analogRead0(void);
 void sendPulse(int);
 void sendPWM(int);
+int potLvl(void);
 
 
 void main(void)
@@ -49,15 +50,11 @@ void main(void)
     while(1){
         // Set up variables
         unsigned int volt = 0; //16 bits
-        unsigned int lvl = 0;
         char str[4];
-        char lvl_str[4];
 
         //Start A/D Conversion
         volt = analogRead0();
-        lvl = (volt*4/1023)%4;
         sprintf(str, "%04d", volt * 49 / 10); //Approximate conversion to 0-5V
-        sprintf(lvl_str, "%04d", lvl);
         
         LCDGoto(0, 1);
         isLeftBtnPressed();
@@ -78,12 +75,7 @@ void main(void)
             case PWM_DEMO:
                 LCDGoto(0, 0);
                 LCDWriteStr("        PWM Demo");
-                LCDGoto(0, 1);
-                LCDPutChar(lvl_str[0]);
-                LCDPutChar(lvl_str[1]);
-                LCDPutChar(lvl_str[2]);
-                LCDPutChar(lvl_str[3]);
-                sendPWM(lvl);
+                sendPWM(potLvl);
                 break;
             case PULSE:
                 LCDWriteStr("Pulse");
@@ -245,6 +237,20 @@ void sendPulse(int n) {
     LATB = patterns[1];
 }
 
+int potLvl(void){
+    int lvl = 0; 
+    char lvl_str[4];
+    int volt = analogRead0();
+    lvl = (volt*4/1023)%4;
+    sprintf(lvl_str, "%04d", lvl);
+    LCDGoto(0, 1);
+    LCDPutChar(lvl_str[0]);
+    LCDPutChar(lvl_str[1]);
+    LCDPutChar(lvl_str[2]);
+    LCDPutChar(lvl_str[3]);
+    return lvl;
+}
+
 void sendPWM(int lvl){
     unsigned char dc80[] = {0b0001010, 0b0001010,0b0001010,0b0001010, 0b0000000};
     unsigned char dc60[] = {0b0001010,0b0001010,0b0001010, 0b0000000, 0b0000000};
@@ -259,10 +265,14 @@ void sendPWM(int lvl){
     
     unsigned char* patterns;
     
+    while (state = PWM_DEMO){
+        isLeftBtnPressed();
+        isRightBtnPressed();
+        lvl = potLvl();
     switch (lvl){
          case 0 : patterns = dc20; break;
          case 1 : patterns = dc40; break;
-         case 2 : patterns = dc60; break;
+         case 2 : patterns = dc20; break;
          case 3 : patterns = dc80; break;
          default : break; 
     }
@@ -274,5 +284,5 @@ void sendPWM(int lvl){
     if(count==0||count==sizeof(patterns)-1)
         dir*=-1;
     LATB=patterns[count]; //Light LEDs
-    
+    }
 }
