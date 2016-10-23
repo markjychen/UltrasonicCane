@@ -33,7 +33,7 @@ unsigned char isRightBtnPressed(void);
 unsigned char isBtnPressed(void);
 int analogRead0(void);
 void sendPulse(int);
-void sendPWM(int);
+void sendPWM(void);
 int potLvl(void);
 
 
@@ -75,7 +75,7 @@ void main(void)
             case PWM_DEMO:
                 LCDGoto(0, 0);
                 LCDWriteStr("        PWM Demo");
-                sendPWM(potLvl);
+                sendPWM();
                 break;
             case PULSE:
                 LCDWriteStr("Pulse");
@@ -100,7 +100,7 @@ void SysInit(void)
     //Set up LEDs
     ANSELB=0b00000000; //Digital IO
     LATB=0b00000000; //LEDs off
-    TRISB=0b00000001; //LEDs are outputs    //RB0 is tied to the button too
+    TRISBbits.RB3 = 0; //LEDs are outputs    //RB0 is tied to the button too
 
      //Set up A/D on AN0
     /*ANSELAbits.ANSA0 = 1;
@@ -251,11 +251,11 @@ int potLvl(void){
     return lvl;
 }
 
-void sendPWM(int lvl){
-    unsigned char dc80[] = {0b0001010, 0b0001010,0b0001010,0b0001010, 0b0000000};
-    unsigned char dc60[] = {0b0001010,0b0001010,0b0001010, 0b0000000, 0b0000000};
-    unsigned char dc40[] = {0b0001010, 0b0001010, 0b0000000, 0b0000000, 0b0000000};
-    unsigned char dc20[] = {0b0001010, 0b0000000,0b0000000,0b0000000,0b0000000};
+void sendPWM(){
+    unsigned char dc80[] = {1, 1, 1, 1, 0};
+    unsigned char dc60[] = {1, 1, 1, 0, 0};
+    unsigned char dc40[] = {1, 1, 0, 0, 0};
+    unsigned char dc20[] = {1, 0, 0, 0, 0};
     
     char count=0;
     char dir = 1;
@@ -264,15 +264,16 @@ void sendPWM(int lvl){
     
     
     unsigned char* patterns;
+    int lvl = potLvl();
     
-    while (state = PWM_DEMO){
+    while (state == PWM_DEMO){
         isLeftBtnPressed();
         isRightBtnPressed();
         lvl = potLvl();
     switch (lvl){
          case 0 : patterns = dc20; break;
          case 1 : patterns = dc40; break;
-         case 2 : patterns = dc20; break;
+         case 2 : patterns = dc60; break;
          case 3 : patterns = dc80; break;
          default : break; 
     }
@@ -281,8 +282,8 @@ void sendPWM(int lvl){
     TMR0L=tmrl;
 
     count+=dir; //Increment counter
-    if(count==0||count==sizeof(patterns)-1)
-        dir*=-1;
-    LATB=patterns[count]; //Light LEDs
-    }
+    if(count==sizeof(patterns)-1) // || count == 0
+        dir *= -1;
+    LATBbits.LATB3 = patterns[count]; //Light LEDs
+    } 
 }
