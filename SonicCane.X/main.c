@@ -30,6 +30,7 @@ unsigned char patterns[] = {0b0001010, 0b0000000};
 void SysInit(void);
 unsigned char isLeftBtnPressed(void);
 unsigned char isRightBtnPressed(void);
+unsigned char isBtnPressed(void);
 int analogRead0(void);
 void sendPulse(int);
 
@@ -56,6 +57,7 @@ void main(void)
         LCDGoto(0, 1);
         isLeftBtnPressed();
         isRightBtnPressed();
+        isBtnPressed();
         Delay10KTCYx(10);
         //delay(100);
 
@@ -130,7 +132,12 @@ void SysInit(void)
     ADCON0 = 0b10001010;//clear ADCON0 to select channel 0 (AN0)
 	ADCON0bits.ADON = 0x01;//Enable A/D module
     ADCON0bits.CHS=0001; //Select RA1
-         
+    
+    
+    //Set up button on RC2
+    ANSELCbits.ANSC2=0; //Digital
+    TRISCbits.RC2=0; //Input
+
     //Set up LCD
     ANSELD = 0x00;
     TRISD = 0x00; //Digital out
@@ -160,11 +167,10 @@ int analogRead0(void){
 unsigned char isLeftBtnPressed(void){
   if (PORTAbits.RA4 == 0){
       Delay10KTCYx(10);
-      //state=0;
+      state=0;
       LCDGoto(0,1);
       LCDWriteStr("                ");
       LCDGoto(0,1);
-      sendPulse(2);
       return 1;
  }
  return 0;
@@ -177,6 +183,18 @@ unsigned char isRightBtnPressed(void){
       LCDGoto(0,1);
       LCDWriteStr("                ");
       LCDGoto(0,1);
+      return 1;
+ }
+ return 0;
+}
+
+unsigned char isBtnPressed(void){
+    if (PORTCbits.RC2 == 0){
+      Delay10KTCYx(10);
+      LCDGoto(0,1);
+      LCDWriteStr("                ");
+      LCDGoto(0,1);
+      sendPulse(2);
       return 1;
  }
  return 0;
