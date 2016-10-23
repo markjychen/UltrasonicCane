@@ -37,9 +37,7 @@ void sendPulse(int);
 void main(void)
 {
     unsigned int volt = 0; 
-    
-    OSCCON=0b01010110; //4 MHz internal oscillator
-
+   
     SysInit();
     LCDClear();
     LCDGoto(0, 0);
@@ -55,7 +53,7 @@ void main(void)
         volt = analogRead0();
         sprintf(str, "%04d", volt * 49 / 10); //Approximate conversion to 0-5V
 
-        LCDGoto(1, 0);
+        LCDGoto(0, 1);
         isLeftBtnPressed();
         isRightBtnPressed();
         Delay10KTCYx(10);
@@ -86,15 +84,20 @@ void SysInit(void)
 {
     //OSCCON=0b01010110; //4 MHz internal oscillator
                         // 16 MHz internal: 0b01110110; 
-    OSCCON = 0b01110110;
-
+    OSCCON=0b01010110; //4 MHz internal oscillator
+    
+    //Set up buttons
+    ANSELBbits.ANSB0=0; //Digital
+    TRISAbits.RA4=1; //Input
+    TRISBbits.RB0=1; //Input
+    
     //Set up LEDs
     ANSELB=0b00000000; //Digital IO
     LATB=0b00000000; //LEDs off
-    TRISB=0b00000000; //LEDs are outputs
+    TRISB=0b00000001; //LEDs are outputs    //RB0 is tied to the button too
 
      //Set up A/D on AN0
-    ANSELAbits.ANSA0 = 1;
+    /*ANSELAbits.ANSA0 = 1;
     TRISAbits.RA0 = 1; //Analog in
     ADCON2bits.ACQT=001; //2 TAD
     ADCON2bits.ADCS=010; //FOSC/32
@@ -114,6 +117,18 @@ void SysInit(void)
  
     ADCON0 = 0b10001010;//clear ADCON0 to select channel 0 (AN0)
 	ADCON0bits.ADON = 0x01;//Enable A/D module
+    ADCON0bits.CHS=0001; //Select RA1*/
+    
+    // from states.c
+    TRISAbits.RA1=1; //Input  NEED THIS
+    ADCON1 = 0b00001110;//VSS,VDD ref. AN0 analog only
+	ADCON2 = 0b00001000;//ADCON2 setup: Left justified, Tacq=2Tad, Tad=2*Tosc (or Fosc/2)
+    ADCON2bits.ACQT=001; //2 TAD (labA))
+    ADCON2bits.ADFM=1; //Right justified (labA))
+    ADCON2bits.ACQT=001; //2 TAD
+    ADCON2bits.ADCS=010; //FOSC/32
+    ADCON0 = 0b10001010;//clear ADCON0 to select channel 0 (AN0)
+	ADCON0bits.ADON = 0x01;//Enable A/D module
     ADCON0bits.CHS=0001; //Select RA1
          
     //Set up LCD
@@ -125,29 +140,31 @@ void SysInit(void)
     LCDWriteStr("Init mode");
     
     //Set up Timer0
-    //T0CONbits.T0CS=0; //Use internal clock (4 MHz/4)
-    //T0CONbits.T08BIT=0; //16 bit counter
-    //T0CONbits.PSA=1; //Don't use prescaler (1:1)
+    T0CONbits.T0CS=0; //Use internal clock (4 MHz/4)
+    T0CONbits.T08BIT=0; //16 bit counter
+    T0CONbits.PSA=1; //Don't use prescaler (1:1)
 }
 
 int analogRead0(void){
-    unsigned int volt = 0;
-    ADCON0bits.GO = 1; 
-    while (ADCON0bits.GO ==1){}; //GO bit automatically clears
-    volt = ADRESH;
-    volt=(volt<<8) | ADRESL; //Math needs to be done in the int variable
-    if(volt==1023) //Fix roundoff error
-        volt=1022;
-    return volt;
+          //Start A/D Conversion
+     int val = 0;
+     ADCON0bits.GO = 1; 
+     while (ADCON0bits.GO ==1){}; //GO bit automatically clears
+     val = ADRESH;
+     val=(val<<8) | ADRESL; //Math needs to be done in the int variable
+     if(val==1023) //Fix roundoff error
+        val=1022;
+     return val;
 }
 
 unsigned char isLeftBtnPressed(void){
   if (PORTAbits.RA4 == 0){
       Delay10KTCYx(10);
-      state=0;
+      //state=0;
       LCDGoto(0,1);
       LCDWriteStr("                ");
       LCDGoto(0,1);
+      sendPulse(2);
       return 1;
  }
  return 0;
@@ -165,19 +182,22 @@ unsigned char isRightBtnPressed(void){
  return 0;
 }
 
-void sendPulse(int n){
-    int c;
+void sendPulse(int n) {
     int count = 0;
-    int dir;
-    INTCONbits.TMR0IF = 0;
-    for (c = 0; c < n; c++){
+    int dir = 1;
+    int m = 0;
+    while (m<4) {
+        while (INTCONbits.TMR0IF == 0) {}
+        INTCONbits.TMR0IF = 0; //Reset flag
+        TMR0H = TMRH;
+        TMR0L = TMRL;
 
-        TMR0H=TMRH;
-        TMR0L=TMRL;
-        dir = 1;
-        count += dir; //increment counter
-        if (count == 0 || count == sizeof(patterns)-1)
+        count += dir; //Increment counter
+        if (count == 0 || count == sizeof (patterns) - 1){
             dir *= -1;
-        LATB = patterns[count];        
+            m++;
+        }
+        LATB = patterns[count]; //Light LEDs
     }
+    LATB = patterns[1];
 }
