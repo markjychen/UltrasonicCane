@@ -61,6 +61,8 @@ void main(void)
     TMR0H=tmrh;
     TMR0L=tmrl;
 
+    //
+    
     while(1){
         while(INTCONbits.TMR0IF==0){}
             ADCON0bits.GO = 1;
