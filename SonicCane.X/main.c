@@ -20,6 +20,12 @@
 #define STANDARD = 0;
 #define PULSE = 1;
 
+int state = 0;
+
+void SysInit(void);
+unsigned char isLeftBtnPressed(void);
+unsigned char isRightBtnPressed(void);
+
 void main(void)
 {
     unsigned char patterns[] = {0b0001010, 0b0000000};
@@ -82,14 +88,12 @@ void SysInit(void)
     //OSCCON=0b01010110; //4 MHz internal oscillator
                         // 16 MHz internal: 0b01110110; 
     OSCCON = 0b01110110;
->>>>>>> development
 
     //Set up LEDs
     ANSELB=0b00000000; //Digital IO
     LATB=0b00000000; //LEDs off
     TRISB=0b00000000; //LEDs are outputs
 
-<<<<<<< HEAD
      //Set up A/D on AN0
     ANSELAbits.ANSA0 = 1;
     TRISAbits.RA0 = 1; //Analog in
@@ -98,10 +102,7 @@ void SysInit(void)
     ADCON2bits.ADFM=1; //Left justified
     ADCON0bits.ADON=1; //Turn on A/D
     
-=======
-    //Set up A/D on AN1    
-    OSCCON=0b01010110; //set to 4 MHz (labA))   
-    
+    //Set up A/D on AN1        
     ADCON1 = 0b00001110;//VSS,VDD ref. AN0 analog only
 	ADCON2 = 0b00001000;//ADCON2 setup: Left justified, Tacq=2Tad, Tad=2*Tosc (or Fosc/2)
     ADCON2bits.ACQT=001; //2 TAD (labA))
@@ -123,35 +124,9 @@ void SysInit(void)
     LCDInit(); //Start LCD
     LCDGoto(0,1);
     LCDWriteStr("Init mode");
->>>>>>> development
-
     
     //Set up Timer0
     T0CONbits.T0CS=0; //Use internal clock (4 MHz/4)
     T0CONbits.T08BIT=0; //16 bit counter
     T0CONbits.PSA=1; //Don't use prescaler (1:1)
-    TMR0H=tmrh;
-    TMR0L=tmrl;
-
-    //
-    
-    while(1){
-        while(INTCONbits.TMR0IF==0){}
-            ADCON0bits.GO = 1;
-            while(ADCON0bits.GO ==1){};
-            volt = ADRESH;
-            volt = (volt<<8) | ADRESL;
-            if (volt == 1023) //Fix roundoff error
-                volt = 1022;
-            DC = 40536 * volt / 1022;
-        
-        INTCONbits.TMR0IF=0; //Reset flag
-        TMR0H=HIGHBYTE(DC);
-        TMR0L=LOWBYTE(DC);
-
-        count+=dir; //Increment counter
-        if(count==0||count==sizeof(patterns)-1)
-            dir*=-1;
-        LATB=patterns[count]; //Light LEDs
-    }
 }
