@@ -35,7 +35,7 @@ void SysInit(void){
 
     //Enable output
     TRISCbits.TRISC1 = 0; //make CCP2 pin output
-    TRISCbits.TRISC2 = 0; //make CCP1 pin output
+    TRISCbits.TRISC2 = 0; //make CCP1 pin output //RC2
 }
 
 void main(void){
