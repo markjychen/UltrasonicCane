@@ -21,23 +21,22 @@
 #define BAT_SAVER 1
 #define PULSE 2
 #define NO_OF_STATES 3
+#define TMRL 0x58
+#define TMRH 0x9E
 int state = 0;
-
+unsigned char patterns[] = {0b0001010, 0b0000000};
 
 //List of Necessary Functions
 void SysInit(void);
 unsigned char isLeftBtnPressed(void);
 unsigned char isRightBtnPressed(void);
 int analogRead0(void);
+void sendPulse(int);
+
 
 void main(void)
 {
-    unsigned char patterns[] = {0b0001010, 0b0000000};
-    char count=0;
-    char dir = 1;
     unsigned int volt = 0; 
-    char tmrl = 0x58;   //25 ms (2^16-(2.5e-2/(1/4e6/4)))
-    char tmrh = 0x9E;
     
     OSCCON=0b01010110; //4 MHz internal oscillator
 
@@ -56,13 +55,13 @@ void main(void)
         volt = analogRead0();
         sprintf(str, "%04d", volt * 49 / 10); //Approximate conversion to 0-5V
 
-        LCDGoto(0, 1);
+        LCDGoto(1, 0);
         isLeftBtnPressed();
         isRightBtnPressed();
         Delay10KTCYx(10);
         //delay(100);
 
-         switch (state) {
+         switch (state%NO_OF_STATES) {
             case STANDARD :
                 LCDPutChar(str[0]);
                 LCDPutChar('.');
@@ -76,6 +75,7 @@ void main(void)
                 break;
             case PULSE:
                 LCDWriteStr("Pulse");
+                //sendPulse(2);
             default : //error
                 break;
         }
@@ -125,9 +125,9 @@ void SysInit(void)
     LCDWriteStr("Init mode");
     
     //Set up Timer0
-    T0CONbits.T0CS=0; //Use internal clock (4 MHz/4)
-    T0CONbits.T08BIT=0; //16 bit counter
-    T0CONbits.PSA=1; //Don't use prescaler (1:1)
+    //T0CONbits.T0CS=0; //Use internal clock (4 MHz/4)
+    //T0CONbits.T08BIT=0; //16 bit counter
+    //T0CONbits.PSA=1; //Don't use prescaler (1:1)
 }
 
 int analogRead0(void){
@@ -163,4 +163,21 @@ unsigned char isRightBtnPressed(void){
       return 1;
  }
  return 0;
+}
+
+void sendPulse(int n){
+    int c;
+    int count = 0;
+    int dir;
+    INTCONbits.TMR0IF = 0;
+    for (c = 0; c < n; c++){
+
+        TMR0H=TMRH;
+        TMR0L=TMRL;
+        dir = 1;
+        count += dir; //increment counter
+        if (count == 0 || count == sizeof(patterns)-1)
+            dir *= -1;
+        LATB = patterns[count];        
+    }
 }
