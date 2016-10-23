@@ -17,14 +17,18 @@
 #define LOWBYTE(v)   ((unsigned char) (v))
 #define HIGHBYTE(v)  ((unsigned char) (((unsigned int) (v)) >> 8))
 
-#define STANDARD = 0;
-#define PULSE = 1;
-
+#define STANDARD 0
+#define BAT_SAVER 1
+#define PULSE 2
+#define NO_OF_STATES 3
 int state = 0;
 
+
+//List of Necessary Functions
 void SysInit(void);
 unsigned char isLeftBtnPressed(void);
 unsigned char isRightBtnPressed(void);
+int analogRead0(void);
 
 void main(void)
 {
@@ -44,43 +48,38 @@ void main(void)
     printf("Hello!\n");
 
     while(1){
-    // Set up variables
-     unsigned int volt = 7; //16 bits
-     char str[4];
+        // Set up variables
+        unsigned int volt = 0; //16 bits
+        char str[4];
 
-      //Start A/D Conversion
-     ADCON0bits.GO = 1; 
-     while (ADCON0bits.GO ==1){}; //GO bit automatically clears
-     volt = ADRESH;
-     volt=(volt<<8) | ADRESL; //Math needs to be done in the int variable
-     if(volt==1023) //Fix roundoff error
-        volt=1022;
-     sprintf(str,"%04d",volt*49/10); //Approximate conversion to 0-5V
-      
-     LCDGoto(0,1);
-     isLeftBtnPressed();
-     isRightBtnPressed();
-     Delay10KTCYx(10);
+        //Start A/D Conversion
+        volt = analogRead0();
+        sprintf(str, "%04d", volt * 49 / 10); //Approximate conversion to 0-5V
+
+        LCDGoto(0, 1);
+        isLeftBtnPressed();
+        isRightBtnPressed();
+        Delay10KTCYx(10);
         //delay(100);
 
-     switch (state%2){
-            case STANDARD:
-               LCDPutChar(str[0]);
-               LCDPutChar('.');
+         switch (state) {
+            case STANDARD :
+                LCDPutChar(str[0]);
+                LCDPutChar('.');
                 LCDPutChar(str[1]);
                 LCDPutChar(str[2]);
                 LCDPutChar(str[3]);
-                LCDPutChar('V');        
+                LCDPutChar('V'); 
                 break;
-                        
+            case BAT_SAVER:
+                LCDWriteStr("Battery Saver");
+                break;
             case PULSE:
-                LCDWriteStr("Placeholder B");
+                LCDWriteStr("Pulse");
+            default : //error
                 break;
-            default:
-                //add error
-                break;
+        }
     }
-  };
 }
 
 void SysInit(void)
@@ -129,4 +128,39 @@ void SysInit(void)
     T0CONbits.T0CS=0; //Use internal clock (4 MHz/4)
     T0CONbits.T08BIT=0; //16 bit counter
     T0CONbits.PSA=1; //Don't use prescaler (1:1)
+}
+
+int analogRead0(void){
+    unsigned int volt = 0;
+    ADCON0bits.GO = 1; 
+    while (ADCON0bits.GO ==1){}; //GO bit automatically clears
+    volt = ADRESH;
+    volt=(volt<<8) | ADRESL; //Math needs to be done in the int variable
+    if(volt==1023) //Fix roundoff error
+        volt=1022;
+    return volt;
+}
+
+unsigned char isLeftBtnPressed(void){
+  if (PORTAbits.RA4 == 0){
+      Delay10KTCYx(10);
+      state=0;
+      LCDGoto(0,1);
+      LCDWriteStr("                ");
+      LCDGoto(0,1);
+      return 1;
+ }
+ return 0;
+}
+
+unsigned char isRightBtnPressed(void){
+  if (PORTBbits.RB0 == 0){
+      Delay10KTCYx(10);
+      state++;
+      LCDGoto(0,1);
+      LCDWriteStr("                ");
+      LCDGoto(0,1);
+      return 1;
+ }
+ return 0;
 }
