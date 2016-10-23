@@ -57,7 +57,7 @@ void main(void)
         LCDGoto(0, 1);
         isLeftBtnPressed();
         isRightBtnPressed();
-        isBtnPressed();
+        //isBtnPressed();
         Delay10KTCYx(10);
         //delay(100);
 
@@ -122,7 +122,9 @@ void SysInit(void)
     ADCON0bits.CHS=0001; //Select RA1*/
     
     // from states.c
+    //Set up RA1 for analog read
     TRISAbits.RA1=1; //Input  NEED THIS
+    ANSELAbits.ANSA0 = 1;
     ADCON1 = 0b00001110;//VSS,VDD ref. AN0 analog only
 	ADCON2 = 0b00001000;//ADCON2 setup: Left justified, Tacq=2Tad, Tad=2*Tosc (or Fosc/2)
     ADCON2bits.ACQT=001; //2 TAD (labA))
@@ -133,10 +135,20 @@ void SysInit(void)
 	ADCON0bits.ADON = 0x01;//Enable A/D module
     ADCON0bits.CHS=0001; //Select RA1
     
+    //Set up RA0 for potentiometer read
+    //Set up A/D on AN0
+    ANSELAbits.ANSA0 = 1;
+    TRISAbits.RA0 = 1; //Analog in
+    ADCON2bits.ACQT=001; //2 TAD
+    ADCON2bits.ADCS=010; //FOSC/32
+    ADCON2bits.ADFM=1; //Left justified
+    ADCON0bits.ADON=1; //Turn on A/D
+    ADCON0bits.CHS = 0000;
+
     
     //Set up button on RC2
-    ANSELCbits.ANSC2=0; //Digital
-    TRISCbits.RC2=0; //Input
+    //ANSELCbits.ANSC2=0; //Digital
+    //TRISCbits.RC2=0; //Input
 
     //Set up LCD
     ANSELD = 0x00;
@@ -168,6 +180,7 @@ unsigned char isLeftBtnPressed(void){
   if (PORTAbits.RA4 == 0){
       Delay10KTCYx(10);
       state=0;
+      sendPulse(2);
       LCDGoto(0,1);
       LCDWriteStr("                ");
       LCDGoto(0,1);
@@ -188,17 +201,17 @@ unsigned char isRightBtnPressed(void){
  return 0;
 }
 
-unsigned char isBtnPressed(void){
+/*unsigned char isBtnPressed(void){
     if (PORTCbits.RC2 == 0){
       Delay10KTCYx(10);
-      LCDGoto(0,1);
-      LCDWriteStr("                ");
-      LCDGoto(0,1);
+      //LCDGoto(0,1);
+      //LCDWriteStr("                ");
+      //LCDGoto(0,1);
       sendPulse(2);
       return 1;
  }
  return 0;
-}
+}*/
 
 void sendPulse(int n) {
     int count = 0;
