@@ -18,7 +18,7 @@
 #define HIGHBYTE(v)  ((unsigned char) (((unsigned int) (v)) >> 8))
 
 #define STANDARD 0
-#define BAT_SAVER 1
+#define PWM_DEMO 1
 #define PULSE 2
 #define NO_OF_STATES 3
 #define TMRL 0x58
@@ -33,6 +33,7 @@ unsigned char isRightBtnPressed(void);
 unsigned char isBtnPressed(void);
 int analogRead0(void);
 void sendPulse(int);
+void sendPWM(int);
 
 
 void main(void)
@@ -48,12 +49,16 @@ void main(void)
     while(1){
         // Set up variables
         unsigned int volt = 0; //16 bits
+        unsigned int lvl = 0;
         char str[4];
+        char lvl_str[4];
 
         //Start A/D Conversion
         volt = analogRead0();
+        lvl = (volt*4/1023)%4;
         sprintf(str, "%04d", volt * 49 / 10); //Approximate conversion to 0-5V
-
+        sprintf(lvl_str, "%04d", lvl);
+        
         LCDGoto(0, 1);
         isLeftBtnPressed();
         isRightBtnPressed();
@@ -70,8 +75,15 @@ void main(void)
                 LCDPutChar(str[3]);
                 LCDPutChar('V'); 
                 break;
-            case BAT_SAVER:
-                LCDWriteStr("Battery Saver");
+            case PWM_DEMO:
+                LCDGoto(0, 0);
+                LCDWriteStr("        PWM Demo");
+                LCDGoto(0, 1);
+                LCDPutChar(lvl_str[0]);
+                LCDPutChar(lvl_str[1]);
+                LCDPutChar(lvl_str[2]);
+                LCDPutChar(lvl_str[3]);
+                sendPWM(lvl);
                 break;
             case PULSE:
                 LCDWriteStr("Pulse");
@@ -231,4 +243,36 @@ void sendPulse(int n) {
         LATB = patterns[count]; //Light LEDs
     }
     LATB = patterns[1];
+}
+
+void sendPWM(int lvl){
+    unsigned char dc80[] = {0b0001010, 0b0001010,0b0001010,0b0001010, 0b0000000};
+    unsigned char dc60[] = {0b0001010,0b0001010,0b0001010, 0b0000000, 0b0000000};
+    unsigned char dc40[] = {0b0001010, 0b0001010, 0b0000000, 0b0000000, 0b0000000};
+    unsigned char dc20[] = {0b0001010, 0b0000000,0b0000000,0b0000000,0b0000000};
+    
+    char count=0;
+    char dir = 1;
+    char tmrl = 0x58;
+    char tmrh = 0x9E;
+    
+    
+    unsigned char* patterns;
+    
+    switch (lvl){
+         case 0 : patterns = dc20; break;
+         case 1 : patterns = dc40; break;
+         case 2 : patterns = dc60; break;
+         case 3 : patterns = dc80; break;
+         default : break; 
+    }
+    INTCONbits.TMR0IF=0; //Reset flag
+    TMR0H=tmrh;
+    TMR0L=tmrl;
+
+    count+=dir; //Increment counter
+    if(count==0||count==sizeof(patterns)-1)
+        dir*=-1;
+    LATB=patterns[count]; //Light LEDs
+    
 }
