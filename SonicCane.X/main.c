@@ -4,28 +4,25 @@
 
 //http://www.microchip.com/forums/m506808.aspx
 
+#pragma config WDTEN=OFF
+#pragma config FOSC=INTIO67
+#pragma config XINST=OFF
+void sendPWM(void);
+
+void sendPWM(void){
+        PR2 = 249;          // Timer2 period register = 250 counts //DC?
+    
+    CCPR1L = 0xBF;      // The 8 most sig bits of the period are 0x7D     
+                        // DC% = CCPR1L = % * PR2
+    CCP1CON = 0b01001100; // The 2 LSbs are 0b00, and CCP1Mz = 110 for PWM
+}
+
 void main(void)
 {
-  char period=0x00;
-  unsigned char outputconfig=0,outputmode=0,config=0;
-  unsigned int duty_cycle=0;
-
-//----Configure pwm ----
-    period = 0xFF;
-    OpenPWM1( period);            //Configure PWM module and initialize PWM period
-
-//-----set duty cycle----
-        duty_cycle = 0x0F00;
-        SetDCPWM1(duty_cycle);        //set the duty cycle
-
-//----set pwm output----
-    outputconfig = FULL_OUT_FWD ;
-    outputmode = PWM_MODE_1;
-    SetOutputPWM1( outputconfig, outputmode);    //output PWM in respective modes
-
-    while(1);                    //observe output on CCP1 pin
-
-//-----close pwm----
-  ClosePWM1();
-
+    OSCCON=0b01010110; //set to 4 MHz (labA))   
+    TRISDbits.TRISD7 = 0;  //set PWM pin RD7 output 
+    T2CON = 0b00000111; // Prescale 1:16, timer on
+    while (1){
+        sendPWM();
+    }
 }
