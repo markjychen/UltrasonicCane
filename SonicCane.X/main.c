@@ -10,9 +10,10 @@
 #include <p18f46k22.h>
 #include <stdio.h>
 
-#pragma config WDTEN=OFF
-#pragma config FOSC=INTIO67
-#pragma config XINST=OFF
+#pragma config WDTEN = SWON
+#pragma config WDTPS = 512
+#pragma config FOSC = INTIO67
+#pragma config XINST = OFF
 
 #define LOWBYTE(v)   ((unsigned char) (v))
 #define HIGHBYTE(v)  ((unsigned char) (((unsigned int) (v)) >> 8))
@@ -39,7 +40,21 @@ void sendPulse(int);
 void sendPWM(int);
 int potLvl(void);
 void enableSleep(void);
+//void wakeUp(void);
 
+/*void High_Priority_ISR(void);
+
+#pragma code InterruptVectorHigh = 0x08
+void InterruptVectorHigh(void){
+    _asm
+        goto High_Priority_ISR
+    _endasm
+}
+
+#pragma interrupt High_Priority_ISR
+void High_Priority_ISR(void){
+    wakeUp();
+}*/
 
 void main(void)
 {
@@ -275,5 +290,8 @@ void sendPWM(int DC){
 }
 
 void enableSleep(void){
+    OSCCONbits.IDLEN = 0;
+    WDTCONbits.SWDTEN = 1;
     Sleep();
+    state = 0;
 }
