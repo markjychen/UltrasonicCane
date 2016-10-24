@@ -60,7 +60,8 @@ void High_Priority_ISR(void){
 void main(void)
 {
     unsigned int volt = 0; 
-   
+    unsigned int adc1;
+
     SysInit();
     LCDClear();
     LCDGoto(0, 0);
@@ -72,10 +73,6 @@ void main(void)
         unsigned int volt = 0; //16 bits
         char str[4]; 
         char per[4];
-
-        //Start A/D Conversion
-        volt = analogRead0();
-        sprintf(str, "%04d", volt * 49 / 10); //Approximate conversion to 0-5V
         
         LCDGoto(0, 1);
         isLeftBtnPressed();
@@ -86,6 +83,10 @@ void main(void)
 
          switch (state%NO_OF_STATES) {
             case STANDARD :
+                //Start A/D Conversion
+                ADCON0bits.CHS = 0000;
+                volt = analogRead0();
+                sprintf(str, "%04d", volt * 49 / 10); //Approximate conversion to 0-5V
                 LCDPutChar(str[0]);
                 LCDPutChar('.');
                 LCDPutChar(str[1]);
@@ -116,6 +117,19 @@ void main(void)
                 }else{
                     LATBbits.LATB1 = 0;
                 }
+                break;
+            case ADC:
+                ADCON0bits.CHS = 0001;
+                adc1 = analogRead0();
+                sprintf(str, "%04d", adc1 * 49 / 10); //Approximate conversion to 0-5V
+                LCDWriteStr("RA1: ");
+                LCDPutChar(str[0]);
+                LCDPutChar('.');
+                LCDPutChar(str[1]);
+                LCDPutChar(str[2]);
+                LCDPutChar(str[3]);
+                LCDPutChar('V'); 
+                
                 break;
             case SLEEP:
                 LCDWriteStr("Sleep");
@@ -151,7 +165,7 @@ void SysInit(void)
     // from states.c
     //Set up RA1 for analog read
     TRISAbits.RA1=1; //Input  NEED THIS
-    ANSELAbits.ANSA0 = 1;
+    ANSELAbits.ANSA1 = 1;
     ADCON1 = 0b00001110;//VSS,VDD ref. AN0 analog only
 	ADCON2 = 0b00001000;//ADCON2 setup: Left justified, Tacq=2Tad, Tad=2*Tosc (or Fosc/2)
     ADCON2bits.ACQT=001; //2 TAD (labA))
