@@ -20,7 +20,8 @@
 #define STANDARD 0
 #define PWM_DEMO 1
 #define PULSE 2
-#define NO_OF_STATES 3
+#define SLEEP 3
+#define NO_OF_STATES 4
 #define TMRL 0x58
 #define TMRH 0x9E
 int state = 0;
@@ -37,6 +38,7 @@ int analogRead0(void);
 void sendPulse(int);
 void sendPWM(int);
 int potLvl(void);
+void enableSleep(void);
 
 
 void main(void)
@@ -98,7 +100,11 @@ void main(void)
                 }else{
                     LATBbits.LATB1 = 0;
                 }
-                
+                break;
+            case SLEEP:
+                LCDWriteStr("Sleep");
+                enableSleep();
+                break;
                 //sendPulse(2);
             default : //error
                 break;
@@ -266,4 +272,8 @@ void sendPWM(int DC){
     CCPR1L = HIGHBYTE(DC);//125;//0xBF;      // The 8 most sig bits of the period are 0x7D     
                         // DC% = CCPR1L = % * PR2
     CCP1CON = 0b01001100; // The 2 LSbs are 0b00, and CCP1Mz = 110 for PWM
+}
+
+void enableSleep(void){
+    Sleep();
 }
