@@ -93,11 +93,11 @@ void main(void)
                 LCDPutChar('V'); 
                 break;
             case PWM_DEMO:
-                LCDGoto(0, 0);
+                //LCDGoto(0, 0);
                 LCDWriteStr("PWM Demo        ");
                 
                 sprintf(per, "%02d", volt);
-                LCDGoto (9, 0);
+                LCDGoto (9, 1);
                 LCDPutChar(per[0]);
                 LCDPutChar(per[1]);
                 LCDPutChar(per[2]);
@@ -290,8 +290,10 @@ void sendPWM(int DC){
 }
 
 void enableSleep(void){
-    OSCCONbits.IDLEN = 0;
-    WDTCONbits.SWDTEN = 1;
+    //OSCCONbits.IDLEN = 0;
+    //WDTCONbits.SWDTEN = 1;
+    INTCON3bits.INT1IE = 1;
     Sleep();
+    INTCON3bits.INT1F = 0;
     state = 0;
 }
