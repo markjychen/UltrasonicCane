@@ -9,6 +9,7 @@
 #pragma config XINST=OFF
 void sendPWM(int);
 int analogRead(void);
+void writeToScreen(int);
 
 void sendPWM(int val){
     PR2 = 249;          // Timer2 period register = 250 counts //DC?
@@ -20,13 +21,27 @@ void sendPWM(int val){
 
 void main(void)
 {
+
     int volt = analogRead();
     OSCCON=0b01010110; //set to 4 MHz (labA))   
     TRISDbits.TRISD7 = 0;  //set PWM pin RD7 output 
     T2CON = 0b00000111; // Prescale 1:16, timer on
+    
+        //Set up RA0 for potentiometer read
+    //Set up A/D on AN0
+    ANSELAbits.ANSA0 = 1;
+    TRISAbits.RA0 = 1; //Analog in
+    ADCON2bits.ACQT=001; //2 TAD
+    ADCON2bits.ADCS=010; //FOSC/32
+    ADCON2bits.ADFM=1; //Left justified
+    ADCON0bits.ADON=1; //Turn on A/D
+    ADCON0bits.CHS = 0000;
+
+    
     while (1){
-        
-        sendPWM(volt);
+        volt = analogRead();
+        //writeToScreen(volt/4);
+        sendPWM(volt/4);
     }
 }
 int analogRead(void){
@@ -39,4 +54,13 @@ int analogRead(void){
      if(val==1023) //Fix roundoff error
         val=1022;
      return val;
+}
+void writeToScreen(int val){
+    char str[4];
+    sprintf(str,"%04d",val); //Approximate conversion to 0-5V
+    LCDGoto(0,0);
+    LCDPutChar(str[0]);
+    LCDPutChar(str[1]);
+    LCDPutChar(str[2]);
+    LCDPutChar(str[3]);
 }
