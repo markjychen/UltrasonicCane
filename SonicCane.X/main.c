@@ -11,7 +11,7 @@
 #include <stdio.h>
 
 #pragma config WDTEN = SWON
-#pragma config WDTPS = 512
+#pragma config WDTPS = 1024
 #pragma config FOSC = INTIO67
 #pragma config XINST = OFF
 
@@ -41,6 +41,7 @@ void sendPulse(int);
 void sendPWM(int);
 int potLvl(void);
 void enableSleep(void);
+void send_us (int);
 //void wakeUp(void);
 
 /*void High_Priority_ISR(void);
@@ -65,9 +66,6 @@ void main(void)
 
     SysInit();
     LCDClear();
-    LCDGoto(0, 0);
-    LCDWriteStr("Hello World!");
-    printf("Hello!\n");
 
     while(1){
         // Set up variables
@@ -85,6 +83,9 @@ void main(void)
          switch (state%NO_OF_STATES) {
             case STANDARD :
                 //Start A/D Conversion
+                LCDGoto(0, 0);
+                LCDWriteStr("Demo: Pot ADC  ");
+                LCDGoto(0, 1);
                 ADCON0bits.CHS = 0000;
                 volt = analogRead0();
                 sprintf(str, "%04d", volt * 49 / 10); //Approximate conversion to 0-5V
@@ -97,24 +98,30 @@ void main(void)
                 break;
             case PWM_DEMO:
                 //LCDGoto(0, 0);
+                 LCDGoto(0, 0);
                 ADCON0bits.CHS=0000; //Select RA0
                 volt = analogRead0();
                 LCDWriteStr("PWM Demo        ");
                 sprintf(per, "%02d", volt);
-                LCDGoto (9, 1);
+                LCDGoto (0, 1);
                 LCDPutChar(per[0]);
                 LCDPutChar(per[1]);
                 LCDPutChar(per[2]);
                 LCDPutChar(per[3]);
+                LCDWriteStr("            ");
                 
                 //sendPWM(volt);
                 break;
             case PULSE:
-                LCDWriteStr("Pulse");
+                LCDGoto(0, 0);
+                LCDWriteStr("One Pulse 20us  ");
+                LCDGoto(0, 1);
                 LCDPutByte(btnPress);
+                LCDWriteStr("              ");
                 if(isBtnPressed()){
                     LATBbits.LATB1 = 1; //this is correct...
-                    sendPulse(1);
+                    //sendPulse(1);
+                    send_us(1);
                     //btnPress++;
                 }else{
                     LATBbits.LATB1 = 0;
@@ -124,6 +131,7 @@ void main(void)
                 ADCON0bits.CHS = 0001;
                 adc1 = analogRead0();
                 sprintf(str, "%04d", adc1 * 49 / 10); //Approximate conversion to 0-5V
+                LCDGoto(0, 0);
                 LCDWriteStr("RA1: ");
                 LCDPutChar(str[0]);
                 LCDPutChar('.');
@@ -131,8 +139,9 @@ void main(void)
                 LCDPutChar(str[2]);
                 LCDPutChar(str[3]);
                 LCDPutChar('V');
-                
-                LCDGoto(0, 0);
+                LCDWriteStr("          ");
+
+                LCDGoto(0, 1);
                 ADCON0bits.CHS = 2; //ra2
                 adc2 = analogRead0();                
                 sprintf(str, "%04d", adc2 * 49 / 10); //Approximate conversion to 0-5V
@@ -143,10 +152,14 @@ void main(void)
                 LCDPutChar(str[2]);
                 LCDPutChar(str[3]);
                 LCDPutChar('V'); 
-                
+                LCDWriteStr("          ");
+
                 break;
             case SLEEP:
-                LCDWriteStr("Sleep");
+                               
+                LCDGoto(0, 0);
+                LCDWriteStr("Sleep Mode      ");
+                LCDGoto(0, 1);;
                 enableSleep();
                 break;
                 //sendPulse(2);
@@ -299,6 +312,15 @@ void sendPulse(int num_of_pulse) {
     LATB = patterns[1];
 }
 
+void send_us(int us){
+    LATBbits.LATB3 = 1;
+    Nop(); Nop(); Nop(); Nop(); Nop();
+    Nop(); Nop(); Nop(); Nop(); Nop();
+    Nop(); Nop(); Nop(); Nop(); Nop();
+    Nop(); Nop(); Nop(); Nop(); Nop();
+    LATBbits.LATB3 = 0;
+}
+
 int potLvl(void){
     int lvl = 0; 
     char lvl_str[4];
@@ -323,10 +345,17 @@ void sendPWM(int DC){
 }
 
 void enableSleep(void){
-    //OSCCONbits.IDLEN = 0;
-    //WDTCONbits.SWDTEN = 1;
+    OSCCONbits.IDLEN = 0;
+    WDTCONbits.SWDTEN = 1;
     INTCON3bits.INT1IE = 1;
     Sleep();
     INTCON3bits.INT1F = 0;
-    state = 0;
+    LCDWriteStr("Awake!          ");
+    while(1){
+        WDTCONbits.SWDTEN = 0;
+        if(isRightBtnPressed()||isLeftBtnPressed()){
+            state = STANDARD;
+            break;
+        }
+    }
 }
