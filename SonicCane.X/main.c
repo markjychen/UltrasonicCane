@@ -33,7 +33,7 @@ unsigned char isRightBtnPressed(void);
 unsigned char isBtnPressed(void);
 int analogRead0(void);
 void sendPulse(int);
-void sendPWM(void);
+void sendPWM(int);
 int potLvl(void);
 
 
@@ -75,7 +75,7 @@ void main(void)
             case PWM_DEMO:
                 LCDGoto(0, 0);
                 LCDWriteStr("        PWM Demo");
-                sendPWM();
+                sendPWM(volt);
                 break;
             case PULSE:
                 LCDWriteStr("Pulse");
@@ -101,29 +101,6 @@ void SysInit(void)
     ANSELB=0b00000000; //Digital IO
     LATB=0b00000000; //LEDs off
     TRISBbits.RB3 = 0; //LEDs are outputs    //RB0 is tied to the button too
-
-     //Set up A/D on AN0
-    /*ANSELAbits.ANSA0 = 1;
-    TRISAbits.RA0 = 1; //Analog in
-    ADCON2bits.ACQT=001; //2 TAD
-    ADCON2bits.ADCS=010; //FOSC/32
-    ADCON2bits.ADFM=1; //Left justified
-    ADCON0bits.ADON=1; //Turn on A/D
-    
-    //Set up A/D on AN1        
-    ADCON1 = 0b00001110;//VSS,VDD ref. AN0 analog only
-	ADCON2 = 0b00001000;//ADCON2 setup: Left justified, Tacq=2Tad, Tad=2*Tosc (or Fosc/2)
-    ADCON2bits.ACQT=001; //2 TAD (labA))
-    ADCON2bits.ADFM=1; //Right justified (labA))
-    ADCON2bits.ACQT=001; //2 TAD
-    ADCON2bits.ADCS=010; //FOSC/32
-    ADCON2bits.ADFM=1; //Left justified
-    
-    ADCON0bits.ADON=1; //Turn on A/D (labA)
- 
-    ADCON0 = 0b10001010;//clear ADCON0 to select channel 0 (AN0)
-	ADCON0bits.ADON = 0x01;//Enable A/D module
-    ADCON0bits.CHS=0001; //Select RA1*/
     
     // from states.c
     //Set up RA1 for analog read
@@ -255,10 +232,11 @@ int potLvl(void){
     return lvl;
 }
 
-void sendPWM(){
+void sendPWM(int DC){
 
+    //DC = 90;
     PR2 = 249;          // Timer2 period register = 250 counts //DC?
-    CCPR1L = 0xBF;      // The 8 most sig bits of the period are 0x7D     
+    CCPR1L = 125;//0xBF;      // The 8 most sig bits of the period are 0x7D     
                         // DC% = CCPR1L = % * PR2
     CCP1CON = 0b01001100; // The 2 LSbs are 0b00, and CCP1Mz = 110 for PWM
 }
