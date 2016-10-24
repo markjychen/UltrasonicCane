@@ -61,6 +61,7 @@ void main(void)
 {
     unsigned int volt = 0; 
     unsigned int adc1;
+    unsigned int adc2;
 
     SysInit();
     LCDClear();
@@ -96,8 +97,9 @@ void main(void)
                 break;
             case PWM_DEMO:
                 //LCDGoto(0, 0);
+                ADCON0bits.CHS=0000; //Select RA0
+                volt = analogRead0();
                 LCDWriteStr("PWM Demo        ");
-                
                 sprintf(per, "%02d", volt);
                 LCDGoto (9, 1);
                 LCDPutChar(per[0]);
@@ -123,6 +125,18 @@ void main(void)
                 adc1 = analogRead0();
                 sprintf(str, "%04d", adc1 * 49 / 10); //Approximate conversion to 0-5V
                 LCDWriteStr("RA1: ");
+                LCDPutChar(str[0]);
+                LCDPutChar('.');
+                LCDPutChar(str[1]);
+                LCDPutChar(str[2]);
+                LCDPutChar(str[3]);
+                LCDPutChar('V');
+                
+                LCDGoto(0, 0);
+                ADCON0bits.CHS = 2; //ra2
+                adc2 = analogRead0();                
+                sprintf(str, "%04d", adc2 * 49 / 10); //Approximate conversion to 0-5V
+                LCDWriteStr("RA2: ");
                 LCDPutChar(str[0]);
                 LCDPutChar('.');
                 LCDPutChar(str[1]);
@@ -162,19 +176,23 @@ void SysInit(void)
     ANSELBbits.ANSB5 = 0;
     TRISBbits.RB5 = 0;
     
-    // from states.c
     //Set up RA1 for analog read
     TRISAbits.RA1=1; //Input  NEED THIS
     ANSELAbits.ANSA1 = 1;
-    ADCON1 = 0b00001110;//VSS,VDD ref. AN0 analog only
-	ADCON2 = 0b00001000;//ADCON2 setup: Left justified, Tacq=2Tad, Tad=2*Tosc (or Fosc/2)
+    //ADCON1 = 0b00001110;//VSS,VDD ref. AN0 analog only
+	//ADCON2 = 0b00001000;//ADCON2 setup: Left justified, Tacq=2Tad, Tad=2*Tosc (or Fosc/2)
     ADCON2bits.ACQT=001; //2 TAD (labA))
     ADCON2bits.ADFM=1; //Right justified (labA))
     ADCON2bits.ACQT=001; //2 TAD
     ADCON2bits.ADCS=010; //FOSC/32
-    ADCON0 = 0b10001010;//clear ADCON0 to select channel 0 (AN0)
+    //ADCON0 = 0b10001010;//clear ADCON0 to select channel 0 (AN0)
 	ADCON0bits.ADON = 0x01;//Enable A/D module
     ADCON0bits.CHS=0001; //Select RA1
+    
+    //Set up RA2 for analog read
+    TRISAbits.RA2 = 1;
+    ANSELAbits.ANSA2 = 1;
+    
     
     //Set up RA0 for potentiometer read
     //Set up A/D on AN0
