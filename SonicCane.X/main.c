@@ -143,7 +143,7 @@ void SysInit(void)
     ANSELBbits.ANSB1 = 0;
     LATB=0b00000000; //LEDs off
     TRISBbits.RB3 = 0; //LEDs are outputs    //RB0 is tied to the button too
-    TRISBbits.RB1 = 0;
+    //TRISBbits.RB1 = 0;
     ANSELBbits.ANSB5 = 0;
     TRISBbits.RB5 = 0;
     
@@ -172,9 +172,9 @@ void SysInit(void)
     ADCON0bits.CHS = 0000;
 
     
-    //Set up button on RB2
-    ANSELBbits.ANSB2=0; //Digital
-    TRISBbits.RB2=1; //Input
+    //Set up button on RB1
+    ANSELBbits.ANSB1=0; //Digital
+    TRISBbits.RB1=1; //Input
 
     //Set up LCD
     ANSELD = 0x00;
@@ -233,7 +233,7 @@ unsigned char isRightBtnPressed(void){
 }
 
 unsigned char isBtnPressed(void){
-    if (PORTBbits.RB2 == 1){
+    if (PORTBbits.RB1 == 1){
         LATBbits.LATB5 = 1;
         Delay10KTCYx(10);
         LATBbits.LATB5 = 0;
