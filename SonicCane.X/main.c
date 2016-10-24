@@ -21,8 +21,9 @@
 #define STANDARD 0
 #define PWM_DEMO 1
 #define PULSE 2
-#define SLEEP 3
-#define NO_OF_STATES 4
+#define ADC 3
+#define SLEEP 4
+#define NO_OF_STATES 5
 #define TMRL 0x58
 #define TMRH 0x9E
 int state = 0;
