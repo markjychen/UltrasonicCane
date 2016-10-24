@@ -166,6 +166,10 @@ void SysInit(void)
     T0CONbits.T0CS=0; //Use internal clock (4 MHz/4)
     T0CONbits.T08BIT=0; //16 bit counter
     T0CONbits.PSA=1; //Don't use prescaler (1:1)
+    
+    //Set up PWM
+    TRISDbits.TRISD7 = 0;  //set PWM pin RD7 output 
+    T2CON = 0b00000111; // Prescale 1:16, timer on
 }
 
 int analogRead0(void){
@@ -252,38 +256,9 @@ int potLvl(void){
 }
 
 void sendPWM(){
-    unsigned char dc80[] = {1, 1, 1, 1, 0};
-    unsigned char dc60[] = {1, 1, 1, 0, 0};
-    unsigned char dc40[] = {1, 1, 0, 0, 0};
-    unsigned char dc20[] = {1, 0, 0, 0, 0};
-    
-    char count=0;
-    char dir = 1;
-    char tmrl = 0x58;
-    char tmrh = 0x9E;
-    
-    
-    unsigned char* patterns;
-    int lvl = potLvl();
-    
-    while (state == PWM_DEMO){
-        isLeftBtnPressed();
-        isRightBtnPressed();
-        lvl = potLvl();
-    switch (lvl){
-         case 0 : patterns = dc20; break;
-         case 1 : patterns = dc40; break;
-         case 2 : patterns = dc60; break;
-         case 3 : patterns = dc80; break;
-         default : break; 
-    }
-    INTCONbits.TMR0IF=0; //Reset flag
-    TMR0H=tmrh;
-    TMR0L=tmrl;
 
-    count+=dir; //Increment counter
-    if(count==sizeof(patterns)-1) // || count == 0
-        dir *= -1;
-    LATBbits.LATB3 = patterns[count]; //Light LEDs
-    } 
+    PR2 = 249;          // Timer2 period register = 250 counts //DC?
+    CCPR1L = 0xBF;      // The 8 most sig bits of the period are 0x7D     
+                        // DC% = CCPR1L = % * PR2
+    CCP1CON = 0b01001100; // The 2 LSbs are 0b00, and CCP1Mz = 110 for PWM
 }
