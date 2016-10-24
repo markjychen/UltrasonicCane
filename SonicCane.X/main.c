@@ -24,6 +24,8 @@
 #define TMRL 0x58
 #define TMRH 0x9E
 int state = 0;
+
+int btnPress = 0;
 unsigned char patterns[] = {0b0001010, 0b0000000};
 
 //List of Necessary Functions
@@ -88,6 +90,15 @@ void main(void)
                 break;
             case PULSE:
                 LCDWriteStr("Pulse");
+                LCDPutByte(btnPress);
+                if(isBtnPressed()){
+                    LATBbits.LATB1 = 1; //this is correct...
+                    sendPulse(1);
+                    //btnPress++;
+                }else{
+                    LATBbits.LATB1 = 0;
+                }
+                
                 //sendPulse(2);
             default : //error
                 break;
@@ -107,9 +118,13 @@ void SysInit(void)
     TRISBbits.RB0=1; //Input
     
     //Set up LEDs
-    ANSELB=0b00000000; //Digital IO
+    ANSELBbits.ANSB3 = 0; //Digital IO
+    ANSELBbits.ANSB1 = 0;
     LATB=0b00000000; //LEDs off
     TRISBbits.RB3 = 0; //LEDs are outputs    //RB0 is tied to the button too
+    TRISBbits.RB1 = 0;
+    ANSELBbits.ANSB5 = 0;
+    TRISBbits.RB5 = 0;
     
     // from states.c
     //Set up RA1 for analog read
@@ -136,9 +151,9 @@ void SysInit(void)
     ADCON0bits.CHS = 0000;
 
     
-    //Set up button on RC2
-    //ANSELCbits.ANSC2=0; //Digital
-    //TRISCbits.RC2=0; //Input
+    //Set up button on RB2
+    ANSELBbits.ANSB2=0; //Digital
+    TRISBbits.RB2=1; //Input
 
     //Set up LCD
     ANSELD = 0x00;
@@ -196,19 +211,21 @@ unsigned char isRightBtnPressed(void){
  return 0;
 }
 
-/*unsigned char isBtnPressed(void){
-    if (PORTCbits.RC2 == 0){
-      Delay10KTCYx(10);
+unsigned char isBtnPressed(void){
+    if (PORTBbits.RB2 == 1){
+        LATBbits.LATB5 = 1;
+        Delay10KTCYx(10);
+        LATBbits.LATB5 = 0;
       //LCDGoto(0,1);
       //LCDWriteStr("                ");
       //LCDGoto(0,1);
-      sendPulse(2);
+      //sendPulse(2);
       return 1;
- }
+    }
  return 0;
-}*/
+}
 
-void sendPulse(int n) {
+void sendPulse(int num_of_pulse) {
     int count = 0;
     int dir = 1;
     int m = 0;
