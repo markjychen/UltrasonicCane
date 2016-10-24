@@ -50,7 +50,8 @@ void main(void)
     while(1){
         // Set up variables
         unsigned int volt = 0; //16 bits
-        char str[4];
+        char str[4]; 
+        char per[4];
 
         //Start A/D Conversion
         volt = analogRead0();
@@ -74,8 +75,16 @@ void main(void)
                 break;
             case PWM_DEMO:
                 LCDGoto(0, 0);
-                LCDWriteStr("        PWM Demo");
-                sendPWM(volt);
+                LCDWriteStr("PWM Demo        ");
+                
+                sprintf(per, "%02d", volt);
+                LCDGoto (9, 0);
+                LCDPutChar(per[0]);
+                LCDPutChar(per[1]);
+                LCDPutChar(per[2]);
+                LCDPutChar(per[3]);
+                
+                //sendPWM(volt);
                 break;
             case PULSE:
                 LCDWriteStr("Pulse");
@@ -147,6 +156,7 @@ void SysInit(void)
     //Set up PWM
     TRISDbits.TRISD7 = 0;  //set PWM pin RD7 output 
     T2CON = 0b00000111; // Prescale 1:16, timer on
+    
 }
 
 int analogRead0(void){
@@ -236,7 +246,7 @@ void sendPWM(int DC){
 
     //DC = 90;
     PR2 = 249;          // Timer2 period register = 250 counts //DC?
-    CCPR1L = 125;//0xBF;      // The 8 most sig bits of the period are 0x7D     
+    CCPR1L = HIGHBYTE(DC);//125;//0xBF;      // The 8 most sig bits of the period are 0x7D     
                         // DC% = CCPR1L = % * PR2
     CCP1CON = 0b01001100; // The 2 LSbs are 0b00, and CCP1Mz = 110 for PWM
 }
