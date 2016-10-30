@@ -1,19 +1,19 @@
 /********************************************************************
 *
-*                
+*
 *
 *********************************************************************
 * FileName:        Lcd.h
 * Dependencies:    See INCLUDES section below
-* Processor: 	   PIC18F46K22      
-* Compiler: 	   C-18       
+* Processor: 	   PIC18F46K22
+* Compiler: 	   C-18
 * Company:         Microchip Technology, Inc.
 
 *
 * Software License Agreement:
 *
 * The software supplied herewith by Microchip Technology Incorporated
-* (the "Company") for its PICmicro® Microcontroller is intended and
+* (the "Company") for its PICmicroï¿½ Microcontroller is intended and
 * supplied to you, the Company's customer, for use solely and
 * exclusively on Microchip PICmicro Microcontroller products. The
 * software is owned by the Company and/or its supplier, and is
@@ -41,7 +41,7 @@
 /**
 *   @file Lcd.h
 *   @brief This file contains the function prototypes for LCD.
-*   
+*
 */
 
 #ifndef _LCD_H
@@ -86,6 +86,6 @@ void LCDGoto(UINT8_T Pos,UINT8_T Ln);           ///< Cursor positioning service
 void LCDPutChar(UINT8_T Data);                  ///< Outputs ASCII character
 void LCDPutByte(UINT8_T Val);                   ///< Outputs binary value
 void LCDWriteStr(const rom far char  *Str);     ///< Outputs strings to LCD
+void LCDWriteVolt(int);                         ///< Outputs voltage value
 
 #endif
-

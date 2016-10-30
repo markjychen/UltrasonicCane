@@ -1,18 +1,18 @@
 /********************************************************************
 *
-*                
+*
 *
 *********************************************************************
 * FileName:        Lcd.c
 * Dependencies:    See INCLUDES section below
-* Processor: 	   PIC18F46K22      
-* Compiler: 	   C-18       
+* Processor: 	   PIC18F46K22
+* Compiler: 	   C-18
 * Company:         Microchip Technology, Inc.
 *
 * Software License Agreement:
 *
 * The software supplied herewith by Microchip Technology Incorporated
-* (the "Company") for its PICmicro® Microcontroller is intended and
+* (the "Company") for its PICmicroï¿½ Microcontroller is intended and
 * supplied to you, the Company's customer, for use solely and
 * exclusively on Microchip PICmicro Microcontroller products. The
 * software is owned by the Company and/or its supplier, and is
@@ -42,7 +42,7 @@
 *   @brief This modules includes all service functions for LCD
 *          operations.
 *   @defgroup LCD	LCD Display
-*   
+*
 */
 
 //*****************************************************************************
@@ -55,10 +55,10 @@
 //                            CONSTANT DEFINITION
 //*****************************************************************************
 
-#define NB_LINES    2                             ///< Number of display lines			
-#define NB_COL      16                            ///< Number of characters per line		
+#define NB_LINES    2                             ///< Number of display lines
+#define NB_COL      16                            ///< Number of characters per line
 
-#define OUTP        0                             ///< Sets I/Os as outputs				
+#define OUTP        0                             ///< Sets I/Os as outputs
 #define INP         1                             ///< Sets I/Os as inputs
 
 #define TimeOut_Max	1000						  ///< Set counter number before WaitLCD() Timeout
@@ -95,7 +95,7 @@
 
 /********************************************************************
 * Function:         ReadByte
-* 
+*
 * PreCondition: 	None
 *
 * Side Effects: 	None
@@ -147,7 +147,7 @@ UINT8_T ReadByte(void)
 
 /********************************************************************
 * Function:         WaitLCD
-* 
+*
 * PreCondition: 	None
 *
 * Side Effects: 	None
@@ -174,9 +174,9 @@ void WaitLCD(void)
     Status = ReadByte();            		// Get LCD state
 	if (TimeOut_Counter == TimeOut_Max)		// WaitLCD Timeout Error
 	{
-		do{	LATBbits.LATB3 = LATBbits.LATB2 = LATBbits.LATB1 = ENABLE;	}while(1);				
-	}			
-	TimeOut_Counter++;	
+		do{	LATBbits.LATB3 = LATBbits.LATB2 = LATBbits.LATB1 = ENABLE;	}while(1);
+	}
+	TimeOut_Counter++;
   } while (Status & 0x80);          // If bit 7 high => LCD busy
   	LCD_RW = WRITE;                 // LCD is now in read mode (MCU in write mode)
 	ClrWdt();						// Precautionary Clear of Watch DOG Timer
@@ -185,7 +185,7 @@ void WaitLCD(void)
 
 /********************************************************************
 * Function:         WriteNibble
-* 
+*
 * PreCondition: 	None
 * Side Effects: 	None
 */
@@ -231,9 +231,9 @@ void WriteNibble(UINT8_T Cmd,UINT8_T Dat)
 
 /********************************************************************
 * Function:         WriteByte
-* 
+*
 * PreCondition: 	None
-*                                                                           
+*
 * Input:        	Cmd, Dat
 *
 * Output:     		None
@@ -245,7 +245,7 @@ void WriteNibble(UINT8_T Cmd,UINT8_T Dat)
 *
 * @brief          	This function writes the specified Byte to the LCD and
 *                   notifies the (LCD) controller whether it has to interpret
-*                   the Byte as data or command. 
+*                   the Byte as data or command.
 *
 * @param	        Cmd		This flag specifies whether the data to be written to
 *                   		the LCD is a command or data to be displayed.
@@ -254,7 +254,7 @@ void WriteNibble(UINT8_T Cmd,UINT8_T Dat)
 *
 * @note    			This routine is meant to be used from within this module only.
 */
-/*******************************************************************/ 
+/*******************************************************************/
 
 void WriteByte(UINT8_T Cmd,UINT8_T Dat)
 {
@@ -264,7 +264,7 @@ void WriteByte(UINT8_T Cmd,UINT8_T Dat)
 
 /********************************************************************
 * Function:         LCDInit
-* 
+*
 * PreCondition: 	None
 *
 * Side Effects: 	None
@@ -276,7 +276,7 @@ void WriteByte(UINT8_T Cmd,UINT8_T Dat)
 *                   MCU hardware for proper LCD operation.
 *
 * @note    			Should be called at system start up only.
-*/                                                                          
+*/
 /*******************************************************************/
 
 void LCDInit(void)
@@ -328,7 +328,7 @@ void LCDInit(void)
 
 /********************************************************************
 * Function:         LCDClear
-* 
+*
 * PreCondition: 	None
 *
 * Side Effects: 	None
@@ -339,7 +339,7 @@ void LCDInit(void)
 * @brief         	This function is called to wipe the LCD display out.
 *
 * @note    			None.
-*/  
+*/
 /*******************************************************************/
 
 void LCDClear(void)
@@ -350,7 +350,7 @@ void LCDClear(void)
 
 /********************************************************************
 * Function:         LCDGoto
-* 
+*
 * PreCondition: 	None
 *
 * Side Effects: 	None
@@ -365,9 +365,9 @@ void LCDClear(void)
 *
 * @param	        Ln		Line (0 or 1) the cursor should be positioned at.
 *
-* @note    			0 <= Pos <= 15               
+* @note    			0 <= Pos <= 15
 * @note				0 <= Ln <= 1
-*/                                                                    
+*/
 /*******************************************************************/
 
 void LCDGoto(UINT8_T Pos,UINT8_T Ln)
@@ -381,7 +381,7 @@ void LCDGoto(UINT8_T Pos,UINT8_T Ln)
 
 /********************************************************************
 * Function:         LCDPutChar
-* 
+*
 * PreCondition: 	None
 *
 * Side Effects: 	None
@@ -395,7 +395,7 @@ void LCDGoto(UINT8_T Pos,UINT8_T Ln)
 * @param	        Data		ASCII data character to be displayed.
 *
 * @note    			None.
-*/ 
+*/
 /*******************************************************************/
 
 void LCDPutChar(UINT8_T Data)
@@ -406,7 +406,7 @@ void LCDPutChar(UINT8_T Data)
 
 /********************************************************************
 * Function:         LCDPutByte
-* 
+*
 * PreCondition: 	None
 *
 * Side Effects: 	None
@@ -434,7 +434,7 @@ void LCDPutByte(UINT8_T Val)
 
 /********************************************************************
 * Function:         LCDWriteStr
-* 
+*
 * PreCondition: 	None
 *
 * Input:        	None
@@ -463,3 +463,35 @@ void LCDWriteStr(const rom far char  *Str)
     LCDPutChar(Str[i++]);                          // Go display current char
 }
 
+/********************************************************************
+* Function:         LCDWriteVolt
+*
+* PreCondition: 	None
+*
+* Input:        	None
+*
+* Output:     		None
+*
+* Side Effects: 	None
+*/
+/**
+* @ingroup  		LCD
+*
+* @brief          	This function displays the specified string starting from
+*                   current position on the LCD.
+*
+* @param	        Int		IF 0; Terminated string to be displayed.
+*
+* @note    			None
+*/
+/*******************************************************************/
+void LCDWriteVolt(int volt){
+    char str[4];
+    sprintf(str, "%04d", volt * 49 / 10);
+    LCDPutChar(str[0]);
+    LCDPutChar('.');
+    LCDPutChar(str[1]);
+    LCDPutChar(str[2]);
+    LCDPutChar(str[3]);
+    LCDPutChar('V');
+}
