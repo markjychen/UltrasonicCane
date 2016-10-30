@@ -60,7 +60,7 @@ void High_Priority_ISR(void){
 
 void main(void)
 {
-    unsigned int volt = 0; 
+    unsigned int volt = 0;
     unsigned int adc1;
     unsigned int adc2;
 
@@ -70,9 +70,9 @@ void main(void)
     while(1){
         // Set up variables
         unsigned int volt = 0; //16 bits
-        char str[4]; 
+        char str[4];
         char per[4];
-        
+
         LCDGoto(0, 1);
         isLeftBtnPressed();
         isRightBtnPressed();
@@ -94,7 +94,7 @@ void main(void)
                 LCDPutChar(str[1]);
                 LCDPutChar(str[2]);
                 LCDPutChar(str[3]);
-                LCDPutChar('V'); 
+                LCDPutChar('V');
                 break;
             case PWM_DEMO:
                 //LCDGoto(0, 0);
@@ -109,7 +109,7 @@ void main(void)
                 LCDPutChar(per[2]);
                 LCDPutChar(per[3]);
                 LCDWriteStr("            ");
-                
+
                 //sendPWM(volt);
                 break;
             case PULSE:
@@ -143,7 +143,7 @@ void main(void)
 
                 LCDGoto(0, 1);
                 ADCON0bits.CHS = 2; //ra2
-                adc2 = analogRead0();                
+                adc2 = analogRead0();
                 sprintf(str, "%04d", adc2 * 49 / 10); //Approximate conversion to 0-5V
                 LCDWriteStr("RA2: ");
                 LCDPutChar(str[0]);
@@ -151,12 +151,12 @@ void main(void)
                 LCDPutChar(str[1]);
                 LCDPutChar(str[2]);
                 LCDPutChar(str[3]);
-                LCDPutChar('V'); 
+                LCDPutChar('V');
                 LCDWriteStr("          ");
 
                 break;
             case SLEEP:
-                               
+
                 LCDGoto(0, 0);
                 LCDWriteStr("Sleep Mode      ");
                 LCDGoto(0, 1);;
@@ -172,14 +172,15 @@ void main(void)
 void SysInit(void)
 {
     //OSCCON=0b01010110; //4 MHz internal oscillator
-                        // 16 MHz internal: 0b01110110; 
+                        // 16 MHz internal: 0b01110110;
     OSCCON=0b01010110; //4 MHz internal oscillator
-    
+
     //Set up buttons
     ANSELBbits.ANSB0=0; //Digital
+    ANSELAbits.ANSA0=0; //don't I need this?
     TRISAbits.RA4=1; //Input
     TRISBbits.RB0=1; //Input
-    
+
     //Set up LEDs
     ANSELBbits.ANSB3 = 0; //Digital IO
     ANSELBbits.ANSB1 = 0;
@@ -188,7 +189,7 @@ void SysInit(void)
     //TRISBbits.RB1 = 0;
     ANSELBbits.ANSB5 = 0;
     TRISBbits.RB5 = 0;
-    
+
     //Set up RA1 for analog read
     TRISAbits.RA1=1; //Input  NEED THIS
     ANSELAbits.ANSA1 = 1;
@@ -201,12 +202,12 @@ void SysInit(void)
     //ADCON0 = 0b10001010;//clear ADCON0 to select channel 0 (AN0)
 	ADCON0bits.ADON = 0x01;//Enable A/D module
     ADCON0bits.CHS=0001; //Select RA1
-    
+
     //Set up RA2 for analog read
     TRISAbits.RA2 = 1;
     ANSELAbits.ANSA2 = 1;
-    
-    
+
+
     //Set up RA0 for potentiometer read
     //Set up A/D on AN0
     ANSELAbits.ANSA0 = 1;
@@ -217,7 +218,7 @@ void SysInit(void)
     ADCON0bits.ADON=1; //Turn on A/D
     ADCON0bits.CHS = 0000;
 
-    
+
     //Set up button on RB1
     ANSELBbits.ANSB1=0; //Digital
     TRISBbits.RB1=1; //Input
@@ -229,22 +230,22 @@ void SysInit(void)
     LCDInit(); //Start LCD
     LCDGoto(0,1);
     LCDWriteStr("Init mode");
-    
+
     //Set up Timer0
     T0CONbits.T0CS=0; //Use internal clock (4 MHz/4)
     T0CONbits.T08BIT=0; //16 bit counter
     T0CONbits.PSA=1; //Don't use prescaler (1:1)
-    
+
     //Set up PWM
-    TRISDbits.TRISD7 = 0;  //set PWM pin RD7 output 
+    TRISDbits.TRISD7 = 0;  //set PWM pin RD7 output
     T2CON = 0b00000111; // Prescale 1:16, timer on
-    
+
 }
 
 int analogRead0(void){
           //Start A/D Conversion
      int val = 0;
-     ADCON0bits.GO = 1; 
+     ADCON0bits.GO = 1;
      while (ADCON0bits.GO ==1){}; //GO bit automatically clears
      val = ADRESH;
      val=(val<<8) | ADRESL; //Math needs to be done in the int variable
@@ -322,7 +323,7 @@ void send_us(int us){
 }
 
 int potLvl(void){
-    int lvl = 0; 
+    int lvl = 0;
     char lvl_str[4];
     int volt = analogRead0();
     lvl = (volt*4/1023)%4;
@@ -339,7 +340,7 @@ void sendPWM(int DC){
 
     //DC = 90;
     PR2 = 249;          // Timer2 period register = 250 counts //DC?
-    CCPR1L = HIGHBYTE(DC);//125;//0xBF;      // The 8 most sig bits of the period are 0x7D     
+    CCPR1L = HIGHBYTE(DC);//125;//0xBF;      // The 8 most sig bits of the period are 0x7D
                         // DC% = CCPR1L = % * PR2
     CCP1CON = 0b01001100; // The 2 LSbs are 0b00, and CCP1Mz = 110 for PWM
 }
