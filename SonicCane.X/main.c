@@ -9,6 +9,7 @@
 #include <delays.h>
 #include <p18f46k22.h>
 #include <stdio.h>
+#include "Sensor.h"
 
 #pragma config WDTEN = SWON
 #pragma config WDTPS = 1024
