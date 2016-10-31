@@ -31,8 +31,7 @@
 #ifndef _SYSTEM_H
 #define _SYSTEM_H
 
-#include <p18cxxx.h>
-#include <GenericTypeDefs.h>
+//#include <GenericTypeDefs.h>
 #include <delays.h>
 #include <p18f46k22.h>
 #include <stdio.h>
@@ -46,31 +45,12 @@
 //*****************************************************************************
 
 //*****************************************************************************
-// Global Definitions and Equates
-//*****************************************************************************
-#pragma config WDTEN = SWON         //Turn ON WDTmr
-#pragma config WDTPS = 1024         //WDT timer (512 = 2 sec)
-#pragma config FOSC = INTIO67       //Connect to internal oscillator
-#pragma config XINST = OFF
-
-//*****************************************************************************
 // Global Variables
 //*****************************************************************************
-
-int state;
 
 //*****************************************************************************
 // Global Constant Strings
 //*****************************************************************************
-
-#define STANDARD 0
-#define PWM_DEMO 1
-#define PULSE 2
-#define ADC 3
-#define SLEEP 4
-#define NO_OF_STATES 5
-#define TMRL 0x58
-#define TMRH 0x9E
 
 //*****************************************************************************
 // Global Variable Strings

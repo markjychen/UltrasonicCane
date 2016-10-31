@@ -9,7 +9,7 @@
 #include <delays.h>
 #include <p18f46k22.h>
 #include <stdio.h>
-#include "Sensor.h"
+//#include "Sensor.h"
 
 #pragma config WDTEN = SWON
 #pragma config WDTPS = 1024
@@ -34,9 +34,9 @@ unsigned char patterns[] = {0b0001010, 0b0000000};
 
 //List of Necessary Functions
 void SysInit(void);
-unsigned char isLeftBtnPressed(void);
-unsigned char isRightBtnPressed(void);
-unsigned char isBtnPressed(void);
+//unsigned char isLeftBtnPressed(void);
+//unsigned char isRightBtnPressed(void);
+//unsigned char isBtnPressed(void);
 int analogRead0(void);
 void sendPulse(int);
 void sendPWM(int);
@@ -254,46 +254,6 @@ int analogRead0(void){
         val=1022;
      return val;
 }
-
-unsigned char isLeftBtnPressed(void){
-  if (PORTAbits.RA4 == 0){
-      Delay10KTCYx(10);
-      state=0;
-      sendPulse(2);
-      LCDGoto(0,1);
-      LCDWriteStr("                ");
-      LCDGoto(0,1);
-      return 1;
- }
- return 0;
-}
-
-unsigned char isRightBtnPressed(void){
-  if (PORTBbits.RB0 == 0){
-      Delay10KTCYx(10);
-      state++;
-      LCDGoto(0,1);
-      LCDWriteStr("                ");
-      LCDGoto(0,1);
-      return 1;
- }
- return 0;
-}
-
-unsigned char isBtnPressed(void){
-    if (PORTBbits.RB1 == 1){
-        LATBbits.LATB5 = 1;
-        Delay10KTCYx(10);
-        LATBbits.LATB5 = 0;
-      //LCDGoto(0,1);
-      //LCDWriteStr("                ");
-      //LCDGoto(0,1);
-      //sendPulse(2);
-      return 1;
-    }
- return 0;
-}
-
 void sendPulse(int num_of_pulse) {
     int count = 0;
     int dir = 1;
