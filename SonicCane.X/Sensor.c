@@ -13,9 +13,9 @@
 //                               SUPPORT FUNCTIONS
 //*****************************************************************************
 
-void analogReadInit(void){          //Set up analog sensors
-    Sensor frontSensor;
-    Sensor backSensor;
+void analogInit(void){          //Set up analog sensors
+    Sensors frontSensor;
+    Sensors backSensor;
 
     ADCON2bits.ACQT = 001;      // 2 TAD (labA)
     ADCON2bits.ADFM = 1;        //Right Justified (labA)
@@ -35,7 +35,7 @@ void analogReadInit(void){          //Set up analog sensors
 void pulseInit(void){
     LATB = 0b00000000;
     ANSELBbits.ANSB3 = 0;
-    TrisBbits.RB3 = 0;          //if 1, input
+    TRISBbits.RB3 = 0;          //if 1, input
     ANSELBbits.ANSB5 = 0;
     TRISBbits.RB5 = 0;
 }

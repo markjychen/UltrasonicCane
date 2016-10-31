@@ -53,10 +53,10 @@
 // Global Variables
 //*****************************************************************************
 
-struct Sensor{
+struct Sensors{
     unsigned int    pin;
     unsigned int    sensorID;
-}
+}sensor;
 
 //*****************************************************************************
 // Global Constant Strings

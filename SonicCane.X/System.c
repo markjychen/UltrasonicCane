@@ -105,10 +105,10 @@ unsigned char isBtnPressed(void){
     }
  return 0;
 }
-void enableSleep(bool enableWDT){
+void enableSleep(){
     OSCCONbits.IDLEN = 0;
     INTCON3bits.INT1IE = 1;
-    if (enableWDT){
+    if (1==0){ //enableWDT
         WDTCONbits.SWDTEN = 1;
     }
     Sleep();

@@ -28,6 +28,9 @@
 // Include and Header files
 //*****************************************************************************
 
+#ifndef _SYSTEM_H
+#define _SYSTEM_H
+
 #include <p18cxxx.h>
 #include <GenericTypeDefs.h>
 #include <delays.h>
@@ -82,7 +85,7 @@ unsigned char isLeftBtnPressed(void);
 unsigned char isRightBtnPressed(void);
 unsigned char isBtnPressed(void);
 int potLvl(void);
-void enableSleep(bool);
+void enableSleep(void);
 
 
 #endif
