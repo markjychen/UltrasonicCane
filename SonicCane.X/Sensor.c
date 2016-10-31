@@ -8,14 +8,18 @@
 //                                SUPPORT MACROS
 //*****************************************************************************
 
+/*#ifndef LOWBYTE(v)
+#define LOWBYTE(v)  ((unsigned char) (v))
+#ifndef HIGHBYTE(v)
+#define HIGHBYTE(v) ((unsigned char) (((unsigned int) (v)) >> 8))*/
 
 //*****************************************************************************
 //                               SUPPORT FUNCTIONS
 //*****************************************************************************
 
 void analogInit(void){          //Set up analog sensors
-    Sensors frontSensor;
-    Sensors backSensor;
+    //Sensors frontSensor;
+    // Sensors backSensor;
 
     ADCON2bits.ACQT = 001;      // 2 TAD (labA)
     ADCON2bits.ADFM = 1;        //Right Justified (labA)
@@ -31,6 +35,7 @@ void analogInit(void){          //Set up analog sensors
     backSensor.pin = 0b0010;
 
 }
+void pulseInit(void);
 
 void pulseInit(void){
     LATB = 0b00000000;
@@ -47,8 +52,8 @@ void motorInit(void){
 }
 
 int analogRead(int pin){        // Analog Read from pin (argument)
-    ADCON0bits.CHS = pin;
     int val = 0;
+    ADCON0bits.CHS = pin;
     ADCON0bits.GO = 1;
     while (ADCON0bits.GO == 1){}    //GO bit automatically clears
     val = ADRESH;

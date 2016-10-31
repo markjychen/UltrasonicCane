@@ -44,10 +44,6 @@
 //*****************************************************************************
 // Global Definitions and Equates
 //*****************************************************************************
-#ifndef LOWBYTE(v)
-#define LOWBYTE(v)  ((unsigned char) (v))
-#ifndef HIGHBYTE(v)
-#define HIGHBYTE(v) ((unsigned char) (((unsigned int) (v)) >> 8))
 
 //*****************************************************************************
 // Global Variables
@@ -56,7 +52,7 @@
 struct Sensors{
     unsigned int    pin;
     unsigned int    sensorID;
-}sensor;
+};
 
 //*****************************************************************************
 // Global Constant Strings
@@ -74,7 +70,7 @@ void analogInit(void);
 void motorInit(void);
 void pulseInit(void);
 int analogRead(int);           // Analog Read from pin (argument)
-void sendPulse (int);           // Send number of pulses
+void sendPulse (int);           // Send number of pulses*/
 //void sendPWM (int);             // Send duty cycle
 
 

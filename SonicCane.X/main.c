@@ -31,7 +31,7 @@ int state = 0;
 
 int btnPress = 0;
 unsigned char patterns[] = {0b0001010, 0b0000000};
-
+void SysInit(void);
 //List of Necessary Functions
 /*void SysInit(void);
 //unsigned char isLeftBtnPressed(void);
