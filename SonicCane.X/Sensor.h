@@ -52,7 +52,7 @@
 struct Sensors{
     unsigned int    pin;
     unsigned int    sensorID;
-};
+} sensor;
 
 //*****************************************************************************
 // Global Constant Strings

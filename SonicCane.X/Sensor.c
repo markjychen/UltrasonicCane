@@ -18,8 +18,8 @@
 //*****************************************************************************
 
 void analogInit(void){          //Set up analog sensors
-    //Sensors frontSensor;
-    // Sensors backSensor;
+    struct Sensors frontSensor;
+    struct Sensors backSensor;
 
     ADCON2bits.ACQT = 001;      // 2 TAD (labA)
     ADCON2bits.ADFM = 1;        //Right Justified (labA)
