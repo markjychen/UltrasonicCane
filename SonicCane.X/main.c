@@ -9,7 +9,7 @@
 #include <delays.h>
 #include <p18f46k22.h>
 #include <stdio.h>
-//#include "Sensor.h"
+
 
 #pragma config WDTEN = SWON
 #pragma config WDTPS = 1024
@@ -32,33 +32,7 @@ int state = 0;
 int btnPress = 0;
 unsigned char patterns[] = {0b0001010, 0b0000000};
 void SysInit(void);
-//List of Necessary Functions
-/*void SysInit(void);
-//unsigned char isLeftBtnPressed(void);
-//unsigned char isRightBtnPressed(void);
-//unsigned char isBtnPressed(void);
-int analogRead0(void);
-void sendPulse(int);
-void sendPWM(int);
-int potLvl(void);
-void enableSleep(void);
-void send_us (int);*/
 
-//void wakeUp(void);
-
-/*void High_Priority_ISR(void);
-
-#pragma code InterruptVectorHigh = 0x08
-void InterruptVectorHigh(void){
-    _asm
-        goto High_Priority_ISR
-    _endasm
-}
-
-#pragma interrupt High_Priority_ISR
-void High_Priority_ISR(void){
-    wakeUp();
-}*/
 
 void main(void)
 {
@@ -71,9 +45,8 @@ void main(void)
 
     while(1){
         // Set up variables
-        unsigned int volt = 0; //16 bits
-        char str[4];
-        char per[4];
+        /*char str[4];
+        volt = 0; //16 bits
 
         LCDGoto(0, 1);
         if(isLeftBtnPressed()){
@@ -85,6 +58,7 @@ void main(void)
         //isBtnPressed();
         Delay10KTCYx(10);
         //delay(100);
+         */
 
          switch (state%NO_OF_STATES) {
             case STANDARD :
@@ -92,8 +66,8 @@ void main(void)
                 LCDGoto(0, 0);
                 LCDWriteStr("Demo: Pot ADC  ");
                 LCDGoto(0, 1);
-                volt = analogRead(0);
-                LCDWriteVolt(volt);
+                //volt = analogRead(0);
+                //LCDWriteVolt(volt);
                 break;
             /*case PWM_DEMO:
                 //LCDGoto(0, 0);
@@ -174,20 +148,20 @@ void SysInit(void)
                         // 16 MHz internal: 0b01110110;
     OSCCON=0b01010110; //4 MHz internal oscillator
 
-    analogInit();
-    pulseInit();
+    //analogInit();
+    //pulseInit();
     //motorInit();
     LCDInit();
-    potentiometerInit();
-    LEDInit();
-    buttonInit();
+    //potentiometerInit();
+    //LEDInit();
+    //buttonInit();
 }
 
 
-int potLvl(void){
+/*int potLvl(void){
     int lvl = 0;
     char lvl_str[4];
-    int volt = analogRead0();
+    int volt = analogRead();
     lvl = (volt*4/1023)%4;
     sprintf(lvl_str, "%04d", lvl);
     LCDGoto(0, 1);
@@ -206,3 +180,4 @@ void sendPWM(int DC){
                         // DC% = CCPR1L = % * PR2
     CCP1CON = 0b01001100; // The 2 LSbs are 0b00, and CCP1Mz = 110 for PWM
 }
+*/
