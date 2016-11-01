@@ -40,9 +40,13 @@ void main(void)
     unsigned int adc1;
     unsigned int adc2;
 
-    SysInit();
+    //SysInit();
+    LCDInit();
     LCDClear();
 
+    while(1){
+        LCDWriteStr("hi");
+    }
     while(1){
         // Set up variables
         /*char str[4];
