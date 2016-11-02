@@ -21,12 +21,14 @@ void sendPWM(int val){
 
 void main(void)
 {
-
     int volt = analogRead();
     OSCCON=0b01010110; //set to 4 MHz (labA))   
     TRISDbits.TRISD7 = 0;  //set PWM pin RD7 output 
     T2CON = 0b00000111; // Prescale 1:16, timer on
     
+    // ANSELD = 0x00; TRISD = 0x00;
+    //LCDInit();
+
         //Set up RA0 for potentiometer read
     //Set up A/D on AN0
     ANSELAbits.ANSA0 = 1;
