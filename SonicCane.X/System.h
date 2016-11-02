@@ -70,6 +70,6 @@ int potLvl(void);
 void enableSleep(void);
 void LCDDisplayInit(void);
 void LEDInit(void);
-
+void Tmr0Init(void);
 
 #endif

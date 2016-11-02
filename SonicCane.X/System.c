@@ -54,6 +54,7 @@ void SysInit(void){
     analogInit();
     LEDInit();
     pulseInit();
+    Tmr0Init();
 }
 void buttonInit(void){          // Set up buttons
     ANSELBbits.ANSB0=0; //Digital
