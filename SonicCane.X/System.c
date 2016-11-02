@@ -31,6 +31,7 @@
 //*****************************************************************************
 
 #include "System.h"
+#include "Lcd.h"
 
 //*****************************************************************************
 //                            CONSTANT DEFINITION
@@ -45,15 +46,27 @@
 //                               SUPPORT FUNCTIONS
 //*****************************************************************************
 
+void SysInit(void){
+    OSCCON=0b01010110; //4 MHz internal oscillator
+    LCDDisplayInit();
+    LCDInit();
+    //buttonInit();
+}
 void buttonInit(void){          // Set up buttons
     ANSELBbits.ANSB0=0; //Digital
-    ANSELAbits.ANSA0=0; //don't I need this?
+    //ANSELAbits.ANSA0=0; //don't I need this?
     TRISAbits.RA4=1; //Input
     TRISBbits.RB0=1; //Input
 
     //Set up button on RB1
     ANSELBbits.ANSB1=0; //Digital
     TRISBbits.RB1=1; //Input
+    
+}
+
+void LCDDisplayInit(void){
+    ANSELD = 0x00;
+    TRISD = 0x00;
 }
 
 void LEDInit(void){

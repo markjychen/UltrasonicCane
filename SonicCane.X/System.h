@@ -61,11 +61,13 @@
 //*****************************************************************************
 
 void SysInit(void);
+void buttonInit(void);
 unsigned char isLeftBtnPressed(void);
 unsigned char isRightBtnPressed(void);
 unsigned char isBtnPressed(void);
 int potLvl(void);
 void enableSleep(void);
+void LCDDisplayInit(void);
 
 
 #endif
