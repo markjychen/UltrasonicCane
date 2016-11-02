@@ -41,13 +41,23 @@ void main(void)
                  LCDGoto(0, 0);
                  LCDWriteStr("Demo: Pot ADC  ");
                  LCDGoto(0, 1);
+                 //LCDWriteVolt(analogRead(1));
+                 LCDPutByte(analogRead(1));
+                 LATAbits.LATA3 = 1;
+                 LATAbits.LATA5 = 0;
+
                  //volt = analogRead(0);
                  //LCDWriteVolt(volt);
                  break;
              case PULSE:
+                 LATAbits.LATA5 = 1;
+                 LATAbits.LATA3 = 0;
                  LCDGoto(0, 0);
                  LCDWriteStr("Demo: Pulse     ");
                  LCDGoto(0, 1);
+                 if (isBtnPressed()==1){
+                    sendPulse(1);
+                 }
                  break;
              default : //error
                  break;
