@@ -50,11 +50,11 @@ void SysInit(void){
     OSCCON=0b01010110; //4 MHz internal oscillator
     LCDDisplayInit();
     LCDInit();
-    //buttonInit();
+    buttonInit();
 }
 void buttonInit(void){          // Set up buttons
     ANSELBbits.ANSB0=0; //Digital
-    //ANSELAbits.ANSA0=0; //don't I need this?
+    ANSELAbits.ANSA0=0; //don't I need this?
     TRISAbits.RA4=1; //Input
     TRISBbits.RB0=1; //Input
 
@@ -95,7 +95,7 @@ void Tmr0Init(void){
     T0CONbits.PSA=1; //Don't use prescaler (1:1)}
 }
 
-unsigned char isLeftBtnPressed(void){
+int isLeftBtnPressed(void){
   if (PORTAbits.RA4 == 0){
       Delay10KTCYx(10);
       return 1;
@@ -103,7 +103,7 @@ unsigned char isLeftBtnPressed(void){
  return 0;
 }
 
-unsigned char isRightBtnPressed(void){
+int isRightBtnPressed(void){
   if (PORTBbits.RB0 == 0){
       Delay10KTCYx(10);
       return 1;
@@ -111,7 +111,7 @@ unsigned char isRightBtnPressed(void){
  return 0;
 }
 
-unsigned char isBtnPressed(void){
+int isBtnPressed(void){
     if (PORTBbits.RB1 == 1){
         Delay10KTCYx(10);
       return 1;

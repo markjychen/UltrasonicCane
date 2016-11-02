@@ -36,6 +36,7 @@
 #include <p18f46k22.h>
 #include <stdio.h>
 
+
 #include "Lcd.h"
 #include "General.h"
 
@@ -62,9 +63,9 @@
 
 void SysInit(void);
 void buttonInit(void);
-unsigned char isLeftBtnPressed(void);
-unsigned char isRightBtnPressed(void);
-unsigned char isBtnPressed(void);
+int isLeftBtnPressed(void);
+int isRightBtnPressed(void);
+int isBtnPressed(void);
 int potLvl(void);
 void enableSleep(void);
 void LCDDisplayInit(void);
