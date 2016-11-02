@@ -51,8 +51,12 @@ void motorInit(void){
     T2CON = 0b00000111; // Prescale 1:16, timer on
 }
 
-int analogRead(int pin){        // Analog Read from pin (argument)
+int analogRead(unsigned char pin){        // Analog Read from pin (argument)
     int val = 0;
+    //pin = 2;
+    LCDPutByte(pin);
+    //pin = 1;
+    //LCDPutByte(pin);
     ADCON0bits.CHS = pin;
     ADCON0bits.GO = 1;
     while (ADCON0bits.GO == 1){}    //GO bit automatically clears
@@ -63,11 +67,17 @@ int analogRead(int pin){        // Analog Read from pin (argument)
     return val;
 }
 void sendPulse (int us){         // Send number of pulses
-    int c = 0; int n = 0;
-    for (c = 0; c < us; c++){
-        for (n = 0; n < 10; n++){
-            Nop();
-        }
-    }
+    //int c = 0; int n = 0;
+    LATBbits.LATB3 = 1;
+    //for (c = 0; c < us; c++){
+    //    Nop(); Nop(); Nop(); 
+    //}
+    Nop(); Nop(); Nop(); Nop(); Nop(); Nop(); Nop(); Nop(); Nop(); Nop();
+    Nop(); Nop(); Nop(); Nop(); Nop(); Nop(); Nop(); Nop(); Nop(); Nop();
+    Nop(); Nop(); Nop(); Nop(); Nop(); Nop(); Nop(); Nop(); Nop(); Nop();
+    Nop(); Nop(); Nop(); Nop(); Nop(); Nop(); Nop(); Nop(); Nop(); Nop();
+
+    LATBbits.LATB3 = 0;
+
 }
 //void sendPWM (int);             // Send duty cycle

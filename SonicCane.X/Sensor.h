@@ -32,9 +32,9 @@
 //*****************************************************************************
 
 #include <p18cxxx.h>
-#include <GenericTypeDefs.h>
+//#include <GenericTypeDefs.h>
 
-#include "General.h"
+//#include "General.h"
 
 
 //*****************************************************************************
@@ -52,7 +52,7 @@
 struct Sensors{
     unsigned int    pin;
     unsigned int    sensorID;
-} sensor;
+} ;
 
 //*****************************************************************************
 // Global Constant Strings
@@ -69,7 +69,7 @@ struct Sensors{
 void analogInit(void);
 void motorInit(void);
 void pulseInit(void);
-int analogRead(int);           // Analog Read from pin (argument)
+int analogRead(unsigned char);           // Analog Read from pin (argument)
 void sendPulse (int);           // Send number of pulses*/
 //void sendPWM (int);             // Send duty cycle
 

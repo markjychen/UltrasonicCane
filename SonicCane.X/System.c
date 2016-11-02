@@ -32,7 +32,7 @@
 
 #include "System.h"
 #include "Lcd.h"
-
+#include "Sensor.h"
 //*****************************************************************************
 //                            CONSTANT DEFINITION
 //*****************************************************************************
@@ -51,6 +51,9 @@ void SysInit(void){
     LCDDisplayInit();
     LCDInit();
     buttonInit();
+    analogInit();
+    LEDInit();
+    pulseInit();
 }
 void buttonInit(void){          // Set up buttons
     ANSELBbits.ANSB0=0; //Digital
@@ -77,6 +80,13 @@ void LEDInit(void){
     //TRISBbits.RB1 = 0;
     ANSELBbits.ANSB5 = 0;
     TRISBbits.RB5 = 0;
+    
+    TRISAbits.RA3 = 0;
+    TRISAbits.RA5 = 0;
+    ANSELAbits.ANSA5 = 0;
+    ANSELAbits.ANSA3 = 0;
+    LATAbits.LATA5 = 0;
+    LATAbits.LATA3 = 0;
 }
 
 void potentiometerInit(void){

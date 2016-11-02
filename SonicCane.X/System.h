@@ -69,6 +69,7 @@ int isBtnPressed(void);
 int potLvl(void);
 void enableSleep(void);
 void LCDDisplayInit(void);
+void LEDInit(void);
 
 
 #endif
