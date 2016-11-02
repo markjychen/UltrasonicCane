@@ -18,7 +18,8 @@
 
 #define STANDARD 0
 #define PULSE 1
-#define NO_OF_STATES 2
+#define PULSE_RECORD 2
+#define NO_OF_STATES 3
 #define TMRL 0x58
 #define TMRH 0x9E
 int state = 0;
@@ -58,6 +59,12 @@ void main(void)
                  if (isBtnPressed()==1){
                     sendPulse(1);
                  }
+                 break;
+             case PULSE_RECORD:
+                 //Todo: write pulse and record
+                 LATAbits.LATA5 = 1;
+                 LATAbits.LATA3 = 1;
+                 
                  break;
              default : //error
                  break;
