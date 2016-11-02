@@ -32,7 +32,7 @@ void main(void)
     //if (isLeftBtnPressed){state = 0;}
     //if (isRightBtnPressed){state++;}
     while(1){
-         if (!isRightBtnPressed){
+         if (isRightBtnPressed()==1){
              state++;
          }
          switch (state%NO_OF_STATES) {
