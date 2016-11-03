@@ -23,7 +23,7 @@ void main(void)
 {
     int volt = analogRead();
     OSCCON=0b01010110; //set to 4 MHz (labA))   
-    TRISDbits.TRISD7 = 0;  //set PWM pin RD7 output 
+    TRISCbits.TRISC2 = 0;  //set PWM pin RD7 output 
     T2CON = 0b00000111; // Prescale 1:16, timer on
     
     // ANSELD = 0x00; TRISD = 0x00;
