@@ -71,5 +71,5 @@ void enableSleep(void);
 void LCDDisplayInit(void);
 void LEDInit(void);
 void Tmr0Init(void);
-
+void delayMillisecond(int num_ms);
 #endif

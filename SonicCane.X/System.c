@@ -36,7 +36,8 @@
 //*****************************************************************************
 //                            CONSTANT DEFINITION
 //*****************************************************************************
-
+#define TMRL_1ms 0x17;
+#define TMRH_1ms 0xFC; 
 
 //*****************************************************************************
 //                                SUPPORT MACROS
@@ -104,6 +105,15 @@ void Tmr0Init(void){
     T0CONbits.T0CS = 0;     //use internal clock (4MHz/ 4)
     T0CONbits.T08BIT=0; //16 bit counter
     T0CONbits.PSA=1; //Don't use prescaler (1:1)}
+}
+
+void delayMillisecond(int num_ms){
+    int count = 0;
+    while (INTCONbits.TMR0IF == 0) {}
+    INTCONbits.TMR0IF = 0;      //reset flag
+    TMR0H = TMRH_1ms;
+    TMR0L = TMRL_1ms;
+    count
 }
 
 int isLeftBtnPressed(void){
