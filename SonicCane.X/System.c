@@ -109,11 +109,12 @@ void Tmr0Init(void){
 
 void delayMillisecond(int num_ms){
     int count = 0;
-    while (INTCONbits.TMR0IF == 0) {}
-    INTCONbits.TMR0IF = 0;      //reset flag
-    TMR0H = TMRH_1ms;
-    TMR0L = TMRL_1ms;
-    count
+    for (count = 0; count < num_ms; count++){
+        while (INTCONbits.TMR0IF == 0) {}
+        INTCONbits.TMR0IF = 0;      //reset flag
+        TMR0H = TMRH_1ms;
+        TMR0L = TMRL_1ms;
+    }
 }
 
 int isLeftBtnPressed(void){

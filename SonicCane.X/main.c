@@ -19,9 +19,10 @@
 #define STANDARD 0
 #define PULSE 1
 #define PULSE_RECORD 2
-#define NO_OF_STATES 3
-#define TMRL 0x58
-#define TMRH 0x9E
+#define DELAY_TEST 3
+#define NO_OF_STATES 4
+//#define TMRL 0x58
+//#define TMRH 0x9E
 int state = 0;
 
 int btnPress = 0;
@@ -64,8 +65,25 @@ void main(void)
                  //Todo: write pulse and record
                  LATAbits.LATA5 = 1;
                  LATAbits.LATA3 = 1;
-                 
+                 LCDGoto(0, 0);
+                 LCDWriteStr("Demo:PulseRecord");
+                 LCDGoto(0, 1);
+                 if (isBtnPressed() == 1){
+                    sendPulse(3);
+                    delayMillisecond(30);
+                    LCDPutByte(analogRead(1));
+                 }
                  break;
+             case DELAY_TEST:
+                 LCDGoto(0, 0);
+                 LCDWriteStr("Demo: Timer     ");
+                 LCDGoto(0, 1);
+                 while(1){
+                    LATAbits.LATA5 = 1;
+                    delayMillisecond(1);
+                    LATAbits.LATA5 = 0;
+                    delayMillisecond(2);
+                 }
              default : //error
                  break;
         }

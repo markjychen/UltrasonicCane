@@ -1,4 +1,5 @@
 #include "Sensor.h"
+#include "System.h"
 
 //*****************************************************************************
 //                            CONSTANT DEFINITION
@@ -72,10 +73,12 @@ void sendPulse (int us){         // Send number of pulses
     //for (c = 0; c < us; c++){
     //    Nop(); Nop(); Nop(); 
     //}
+    /*Nop(); Nop(); Nop(); Nop(); Nop(); Nop(); Nop(); Nop(); Nop(); Nop();
     Nop(); Nop(); Nop(); Nop(); Nop(); Nop(); Nop(); Nop(); Nop(); Nop();
     Nop(); Nop(); Nop(); Nop(); Nop(); Nop(); Nop(); Nop(); Nop(); Nop();
-    Nop(); Nop(); Nop(); Nop(); Nop(); Nop(); Nop(); Nop(); Nop(); Nop();
-    Nop(); Nop(); Nop(); Nop(); Nop(); Nop(); Nop(); Nop(); Nop(); Nop();
+    Nop(); Nop(); Nop(); Nop(); Nop(); Nop(); Nop(); Nop(); Nop(); Nop();*/
+    
+    delayMillisecond(us);
 
     LATBbits.LATB3 = 0;
 
