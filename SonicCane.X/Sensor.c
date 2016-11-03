@@ -36,7 +36,6 @@ void analogInit(void){          //Set up analog sensors
     backSensor.pin = 0b0010;
 
 }
-void pulseInit(void);
 
 void pulseInit(void){
     LATB = 0b00000000;
@@ -83,4 +82,8 @@ void sendPulse (int us){         // Send number of pulses
     LATBbits.LATB3 = 0;
 
 }
-//void sendPWM (int);             // Send duty cycle
+void sendPWM (int);             // Send duty cycle
+
+void pwmInit(){
+    
+}
