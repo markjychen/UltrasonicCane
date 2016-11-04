@@ -488,10 +488,10 @@ void LCDWriteStr(const rom far char  *Str)
 void LCDWriteVolt(int volt){
     char str[4];
     sprintf(str, "%04d", volt * 49 / 10);
-    LCDPutChar(str[0]);
+    LCDPutChar('a');
     LCDPutChar('.');
-    LCDPutChar(str[1]);
-    LCDPutChar(str[2]);
-    LCDPutChar(str[3]);
+    LCDPutChar('b');
+    LCDPutChar('c');
+    LCDPutChar('d');
     LCDPutChar('V');
 }

@@ -47,8 +47,8 @@ void main(void)
                  LCDGoto(0, 0);
                  LCDWriteStr("Demo: Pot ADC  ");
                  LCDGoto(0, 1);
-                 //LCDWriteVolt(analogRead(1));
-                 LCDPutByte(analogRead(1));
+                 LCDWriteVolt(analogRead(0));
+                 LCDPutByte((unsigned)analogRead(0));
                  LATAbits.LATA3 = 1;
                  LATAbits.LATA5 = 0;
 
