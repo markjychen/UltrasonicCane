@@ -71,7 +71,7 @@ void motorInit(void);
 void pulseInit(void);
 int analogRead(unsigned char);           // Analog Read from pin (argument)
 void sendPulse (int);           // Send number of pulses*/
-//void sendPWM (int);             // Send duty cycle
+void sendPWM (int);             // Send duty cycle
 
 
 #endif
