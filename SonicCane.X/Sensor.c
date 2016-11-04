@@ -78,6 +78,7 @@ void sendPulse (int us){         // Send number of pulses
 
 }
 void sendPWM (int val){
+    motorInit();
     TRISCbits.TRISC2 = 0;  //set PWM pin RC1 output  //hmm P1C
     PR2 = 249;          // Timer2 period register = 250 counts //DC?
     
@@ -86,6 +87,11 @@ void sendPWM (int val){
 
 }  
 
+void stopPWM(){
+    CCPR1L = 0;
+    //TRISCbits.TRISC2 = 1;
+    CCP1CONbits.CCP1M = 000;
+}
              // Send duty cycle
 
 

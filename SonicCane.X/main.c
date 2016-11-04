@@ -20,8 +20,10 @@
 #define PULSE 1
 #define PULSE_RECORD 2
 #define PWM 3
-#define DELAY_TEST 4
-#define NO_OF_STATES 4
+#define DELAY_TEST 999
+#define PULSE_RECORD_PWM 4
+#define CONT_RECORD_PWM 5
+#define NO_OF_STATES 6
 //#define TMRL 0x58
 //#define TMRH 0x9E
 int state = 0;
@@ -31,6 +33,7 @@ unsigned char patterns[] = {0b0001010, 0b0000000};
 
 void main(void)
 {
+    int myVolt;
     SysInit();
     //if (isLeftBtnPressed){state = 0;}
     //if (isRightBtnPressed){state++;}
@@ -78,10 +81,10 @@ void main(void)
              case PWM:
                  LCDGoto(0, 0);
                  LCDWriteStr("Demo: PWM       ");
-                 LCDGoto(0, 1);     
-                 //while(1){
-                    sendPWM(analogRead(0)/4);
-                 //}
+                 LCDGoto(0, 1);  
+                 myVolt = analogRead(0)/4;
+                 sendPWM(myVolt);
+                 LCDPutByte(myVolt);
                  break;
              case DELAY_TEST:
                  LCDGoto(0, 0);
@@ -93,7 +96,38 @@ void main(void)
                     LATAbits.LATA5 = 0;
                     delayMillisecond(2);
                  }
-                 
+             case PULSE_RECORD_PWM:
+                 LCDGoto(0, 0);
+                 LCDWriteStr("Demo: P_R_PWM   ");
+                 LCDGoto(0, 1);
+                 if (isBtnPressed() == 1){
+                    sendPulse(3);
+                    delayMillisecond(30);
+                    myVolt = analogRead(1);
+                    sendPWM(myVolt/4);
+                    delayMillisecond(500);
+                    LCDPutByte(analogRead(1));
+                    stopPWM();    
+                 }
+                 //sendPWM(0);
+                 break;
+             case CONT_RECORD_PWM:
+                 LCDGoto(0, 0);
+                 LCDWriteStr("Demo: Continuous");
+                 LCDGoto(0, 1); 
+                 LCDWriteStr("                ");
+                 while (isBtnPressed() != 1){
+                     sendPulse(3);
+                     delayMillisecond(3);
+                     myVolt = analogRead(1);
+                     sendPWM(myVolt/4);
+                     delayMillisecond(500);
+                     LCDPutByte(analogRead(1));
+                     stopPWM();  
+                     delayMillisecond(100);
+                     LCDGoto(0, 1);
+                 }
+                 break;
              default : //error
                  break;
         }
