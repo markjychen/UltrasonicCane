@@ -19,7 +19,8 @@
 #define STANDARD 0
 #define PULSE 1
 #define PULSE_RECORD 2
-#define DELAY_TEST 3
+#define PWM 3
+#define DELAY_TEST 4
 #define NO_OF_STATES 4
 //#define TMRL 0x58
 //#define TMRH 0x9E
@@ -74,6 +75,14 @@ void main(void)
                     LCDPutByte(analogRead(1));
                  }
                  break;
+             case PWM:
+                 LCDGoto(0, 0);
+                 LCDWriteStr("Demo: PWM       ");
+                 LCDGoto(0, 1);     
+                 //while(1){
+                    sendPWM(analogRead(0)/4);
+                 //}
+                 break;
              case DELAY_TEST:
                  LCDGoto(0, 0);
                  LCDWriteStr("Demo: Timer     ");
@@ -84,6 +93,7 @@ void main(void)
                     LATAbits.LATA5 = 0;
                     delayMillisecond(2);
                  }
+                 
              default : //error
                  break;
         }

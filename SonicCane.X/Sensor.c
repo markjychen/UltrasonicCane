@@ -45,11 +45,6 @@ void pulseInit(void){
     TRISBbits.RB5 = 0;
 }
 
-void motorInit(void){
-    //Set up PWM
-    TRISDbits.TRISD7 = 0;  //set PWM pin RD7 output
-    T2CON = 0b00000111; // Prescale 1:16, timer on
-}
 
 int analogRead(unsigned char pin){        // Analog Read from pin (argument)
     int val = 0;
@@ -82,8 +77,29 @@ void sendPulse (int us){         // Send number of pulses
     LATBbits.LATB3 = 0;
 
 }
-void sendPWM (int);             // Send duty cycle
-
-void pwmInit(){
+void sendPWM (int val){
+    TRISCbits.TRISC2 = 0;  //set PWM pin RC1 output  //hmm P1C
+    PR2 = 249;          // Timer2 period register = 250 counts //DC?
     
+    CCPR1L = val;      // The 8 most sig bits of the period are 0x7D     
+                        // DC% = CCPR1L = % * PR2
+
+}  
+
+             // Send duty cycle
+
+
+void motorInit(void){
+    //Set up PWM
+    TRISCbits.TRISC2 = 1;
+    CCP1CON = 0b01001100; // The 2 LSbs are 0b00, and CCP1Mz = 110 for PWM
+    CCP1CONbits.CCP1M0 = 0; //unused
+    CCP1CONbits.CCP1M1 = 0; //unused
+    CCP1CONbits.CCP1M2 = 1; //need for pwm
+    CCP1CONbits.CCP1M3 = 1; // need for pwm
+    CCP1CONbits.DC1B0 = 0;  // lower byte
+    CCP1CONbits.DC1B1 = 0;  // upper byte
+    CCP1CONbits.P1M0 = 0;   // unused???... unimplemented -> set 00
+    CCP1CONbits.P1M1 = 0;   // 
+    T2CON = 0b00000111; // Prescale 1:16, timer on
 }
