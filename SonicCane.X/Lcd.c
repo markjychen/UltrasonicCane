@@ -486,12 +486,15 @@ void LCDWriteStr(const rom far char  *Str)
 */
 /*******************************************************************/
 void LCDWriteVolt(int volt){
-    char str[4];
-    sprintf(str, "%04d", volt * 49 / 10);
-    LCDPutChar('a');
+    char bob[4];
+    sprintf(bob, "%04d", volt * 49 / 10);
+    LCDPutChar(bob[0]);
     LCDPutChar('.');
-    LCDPutChar('b');
-    LCDPutChar('c');
-    LCDPutChar('d');
+    LCDPutChar(bob[1]);
+    LCDPutChar(bob[2]);
+    LCDPutChar(bob[3]);
     LCDPutChar('V');
+    LCDPutByte(volt);
+    LCDPutChar('a');
+    LCDPutByte(bob);
 }

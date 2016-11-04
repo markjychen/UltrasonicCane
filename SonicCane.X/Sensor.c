@@ -49,7 +49,7 @@ void pulseInit(void){
 int analogRead(unsigned char pin){        // Analog Read from pin (argument)
     int val = 0;
     //pin = 2;
-    LCDPutByte(pin);
+    //LCDPutByte(pin);
     //pin = 1;
     //LCDPutByte(pin);
     ADCON0bits.CHS = pin;
