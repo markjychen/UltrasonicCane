@@ -26,13 +26,15 @@
 #define NO_OF_STATES 6
 //#define TMRL 0x58
 //#define TMRH 0x9E
-int state = 0;
 
-int btnPress = 0;
-unsigned char patterns[] = {0b0001010, 0b0000000};
+void LCDWriteLevels(int);
+
+int state = 0;
 
 void main(void)
 {
+    char str[4];
+    int volt = 0;
     int myVolt;
     SysInit();
     //if (isLeftBtnPressed){state = 0;}
@@ -45,16 +47,11 @@ void main(void)
              case STANDARD :
                  //Start A/D Conversion
                  LCDGoto(0, 0);
-                 LCDWriteStr("Demo: Pot ADC  ");
+                 LCDWriteStr("Demo: Pot ADC   ");
                  LCDGoto(0, 1);
-                 LCDWriteVolt(analogRead(0));
-                 LCDPutByte((unsigned)analogRead(0));
-                 LATAbits.LATA3 = 1;
-                 LATAbits.LATA5 = 0;
-
-                 //volt = analogRead(0);
-                 //LCDWriteVolt(volt);
+                 LCDWriteLevels(analogRead(0));
                  break;
+                 
              case PULSE:
                  LATAbits.LATA5 = 1;
                  LATAbits.LATA3 = 0;
@@ -65,6 +62,7 @@ void main(void)
                     sendPulse(1);
                  }
                  break;
+                 
              case PULSE_RECORD:
                  //Todo: write pulse and record
                  LATAbits.LATA5 = 1;
@@ -75,27 +73,31 @@ void main(void)
                  if (isBtnPressed() == 1){
                     sendPulse(3);
                     delayMillisecond(30);
-                    LCDPutByte(analogRead(1));
+                    LCDWriteLevels(analogRead(1));
                  }
                  break;
+                 
              case PWM:
                  LCDGoto(0, 0);
                  LCDWriteStr("Demo: PWM       ");
                  LCDGoto(0, 1);  
                  myVolt = analogRead(0)/4;
                  sendPWM(myVolt);
-                 LCDPutByte(myVolt);
+                 LCDWriteLevels(myVolt);
                  break;
-             case DELAY_TEST:
+                 
+             case DELAY_TEST:   //case not implemented
                  LCDGoto(0, 0);
                  LCDWriteStr("Demo: Timer     ");
                  LCDGoto(0, 1);
-                 while(1){
+                 while(1){      //danger danger danger; no escape
                     LATAbits.LATA5 = 1;
                     delayMillisecond(1);
                     LATAbits.LATA5 = 0;
                     delayMillisecond(2);
                  }
+                 break;
+                 
              case PULSE_RECORD_PWM:
                  LCDGoto(0, 0);
                  LCDWriteStr("Demo: P_R_PWM   ");
@@ -106,11 +108,12 @@ void main(void)
                     myVolt = analogRead(1);
                     sendPWM(myVolt/4);
                     delayMillisecond(500);
-                    LCDPutByte(analogRead(1));
+                    LCDWriteLevels(analogRead(1));
                     stopPWM();    
                  }
                  //sendPWM(0);
                  break;
+                 
              case CONT_RECORD_PWM:
                  LCDGoto(0, 0);
                  LCDWriteStr("Demo: Continuous");
@@ -122,16 +125,26 @@ void main(void)
                      myVolt = analogRead(1);
                      sendPWM(myVolt/4);
                      delayMillisecond(500);
-                     LCDPutByte(analogRead(1));
+                     LCDWriteLevels(analogRead(1));
                      stopPWM();  
                      delayMillisecond(100);
                      LCDGoto(0, 1);
                  }
                  break;
+                 
              default : //error
                  break;
         }
     }
 }
 
+void LCDWriteLevels(int volt){
+    char str[4];
+    sprintf(str, "%04d", volt);
+    LCDPutChar(str[0]);
+    LCDPutChar(str[1]);
+    LCDPutChar(str[2]);
+    LCDPutChar(str[3]);
+    LCDPutChar("|");
 
+}
