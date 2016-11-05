@@ -51,7 +51,7 @@ void main(void)
                  LCDGoto(0, 1);
                  LCDWriteLevels(analogRead(0));
                  break;
-                 
+
              case PULSE:
                  LATAbits.LATA5 = 1;
                  LATAbits.LATA3 = 0;
@@ -62,7 +62,7 @@ void main(void)
                     sendPulse(1);
                  }
                  break;
-                 
+
              case PULSE_RECORD:
                  //Todo: write pulse and record
                  LATAbits.LATA5 = 1;
@@ -76,16 +76,16 @@ void main(void)
                     LCDWriteLevels(analogRead(1));
                  }
                  break;
-                 
+
              case PWM:
                  LCDGoto(0, 0);
                  LCDWriteStr("Demo: PWM       ");
-                 LCDGoto(0, 1);  
+                 LCDGoto(0, 1);
                  myVolt = analogRead(0)/4;
                  sendPWM(myVolt);
                  LCDWriteLevels(myVolt);
                  break;
-                 
+
              case DELAY_TEST:   //case not implemented
                  LCDGoto(0, 0);
                  LCDWriteStr("Demo: Timer     ");
@@ -97,7 +97,7 @@ void main(void)
                     delayMillisecond(2);
                  }
                  break;
-                 
+
              case PULSE_RECORD_PWM:
                  LCDGoto(0, 0);
                  LCDWriteStr("Demo: P_R_PWM   ");
@@ -109,15 +109,15 @@ void main(void)
                     sendPWM(myVolt/4);
                     delayMillisecond(500);
                     LCDWriteLevels(analogRead(1));
-                    stopPWM();    
+                    stopPWM();
                  }
                  //sendPWM(0);
                  break;
-                 
+
              case CONT_RECORD_PWM:
                  LCDGoto(0, 0);
                  LCDWriteStr("Demo: Continuous");
-                 LCDGoto(0, 1); 
+                 LCDGoto(0, 1);
                  LCDWriteStr("                ");
                  while (isBtnPressed() != 1){
                      sendPulse(3);
@@ -126,12 +126,12 @@ void main(void)
                      sendPWM(myVolt/4);
                      delayMillisecond(500);
                      LCDWriteLevels(analogRead(1));
-                     stopPWM();  
+                     stopPWM();
                      delayMillisecond(100);
                      LCDGoto(0, 1);
                  }
                  break;
-                 
+
              default : //error
                  break;
         }

@@ -72,4 +72,5 @@ void LCDDisplayInit(void);
 void LEDInit(void);
 void Tmr0Init(void);
 void delayMillisecond(int num_ms);
+int smooth(int data, float filterVal, float smoothedVal);
 #endif

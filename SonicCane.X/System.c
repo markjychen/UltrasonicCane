@@ -37,7 +37,7 @@
 //                            CONSTANT DEFINITION
 //*****************************************************************************
 #define TMRL_1ms 0x17;
-#define TMRH_1ms 0xFC; 
+#define TMRH_1ms 0xFC;
 
 //*****************************************************************************
 //                                SUPPORT MACROS
@@ -67,7 +67,7 @@ void buttonInit(void){          // Set up buttons
     //Set up button on RB1
     ANSELBbits.ANSB1=0; //Digital
     TRISBbits.RB1=1; //Input
-    
+
 }
 
 void LCDDisplayInit(void){
@@ -83,7 +83,7 @@ void LEDInit(void){
     //TRISBbits.RB1 = 0;
     ANSELBbits.ANSB5 = 0;
     TRISBbits.RB5 = 0;
-    
+
     TRISAbits.RA3 = 0;
     TRISAbits.RA5 = 0;
     ANSELAbits.ANSA5 = 0;
@@ -151,4 +151,19 @@ void enableSleep(){
     INTCON3bits.INT1F = 0;
     WDTCONbits.SWDTEN = 0;
     //LCDWriteStr("Awake!          ");
+}
+int smooth(int data, float filterVal, float smoothedVal){
+//Need to have global int sensVal // for raw sensor values...
+//Need global float filterVal //to determine smoothness 0.0001 is max, 1 is off (no smoothing)
+//Need global float smoothedVal //this holds the last loop value (use unique variable for every different sensor)
+
+    if (filterVal > 1){         // check to make sure params in range
+        filterVal = 0.99;
+    } else if (filterVal <= 0){
+        filterVal = 0;
+    }
+
+    smoothedVal = (data * (1 - filterVal)) + (smoothedVal * filterVal);
+
+    return (int)smoothedVal;
 }
