@@ -79,7 +79,7 @@ void sendPulse (int us){         // Send number of pulses
 }
 void sendPWM (int val){
     motorInit();
-    TRISCbits.TRISC2 = 0;  //set PWM pin RC1 output  //hmm P1C
+    TRISCbits.TRISC2 = 0;  //set PWM pin RC2 output  //hmm P1C
     PR2 = 249;          // Timer2 period register = 250 counts //DC?
     
     CCPR1L = val;      // The 8 most sig bits of the period are 0x7D     
