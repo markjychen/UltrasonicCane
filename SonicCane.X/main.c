@@ -35,7 +35,7 @@ void main(void)
 {
     char str[4];
     int volt = 0;
-    int myVolt;
+    int myVolt; int myVolt2;
     int index = 0;
     SysInit();
     //if (isLeftBtnPressed){state = 0;}
@@ -107,9 +107,12 @@ void main(void)
                     sendPulse(3);
                     delayMillisecond(30);
                     myVolt = analogRead(1);
+                    myVolt2 = analogRead(2);
                     sendPWM(myVolt/4);
                     delayMillisecond(500);
-                    LCDWriteLevels(analogRead(1));
+                    LCDWriteLevels(myVolt);
+                    LCDWriteStr(" ");
+                    LCDWriteLevels(myVolt2);
                     stopPWM();
                  }
                  //sendPWM(0);
@@ -124,12 +127,15 @@ void main(void)
                      sendPulse(3);
                      delayMillisecond(3);
                      //myVolt = smooth(analogRead(0), 0.75 ,myVolt);
-                     myVolt = boxcar_filter (analogRead(0), index);
+                     myVolt = boxcar_filter (analogRead(1), index);
+                     myVolt2 = analogRead(2);
                      index++;
                      index = index%5;
                      sendPWM(myVolt/4);
                      delayMillisecond(500);
-                     LCDWriteLevels(myVolt);
+                     LCDWriteLevels(myVolt/2);
+                     LCDWriteStr(" ");
+                     LCDWriteLevels(myVolt2/2);
                      stopPWM();
                      delayMillisecond(50);
                      LCDGoto(0, 1);
