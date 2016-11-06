@@ -39,6 +39,10 @@
 #define TMRL_1ms 0x17;
 #define TMRH_1ms 0xFC;
 
+#define windowSize 5;
+int total = 0; 
+int readings[5];
+//int readings[windowSize] = {0,0,0,0,0};
 //*****************************************************************************
 //                                SUPPORT MACROS
 //*****************************************************************************
@@ -160,10 +164,21 @@ int smooth(int data, float filterVal, float smoothedVal){
     if (filterVal > 1){         // check to make sure params in range
         filterVal = 0.99;
     } else if (filterVal <= 0){
-        filterVal = 0;
+        filterVal = 0.001;
     }
 
     smoothedVal = (data * (1 - filterVal)) + (smoothedVal * filterVal);
 
     return (int)smoothedVal;
 }
+
+int boxcar_filter(int data, int readIndex){
+    int average = 0;
+    total = total - readings[readIndex];
+    readings[readIndex] = data;
+    total = total + readings[readIndex];
+    readIndex = readIndex % windowSize;
+    average = total / windowSize;
+    return average;
+}
+    

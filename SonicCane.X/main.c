@@ -36,6 +36,7 @@ void main(void)
     char str[4];
     int volt = 0;
     int myVolt;
+    int index = 0;
     SysInit();
     //if (isLeftBtnPressed){state = 0;}
     //if (isRightBtnPressed){state++;}
@@ -122,12 +123,15 @@ void main(void)
                  while (isBtnPressed() != 1){
                      sendPulse(3);
                      delayMillisecond(3);
-                     myVolt = analogRead(1);
+                     //myVolt = smooth(analogRead(0), 0.75 ,myVolt);
+                     myVolt = boxcar_filter (analogRead(0), index);
+                     index++;
+                     index = index%5;
                      sendPWM(myVolt/4);
                      delayMillisecond(500);
-                     LCDWriteLevels(analogRead(1));
+                     LCDWriteLevels(myVolt);
                      stopPWM();
-                     delayMillisecond(100);
+                     delayMillisecond(50);
                      LCDGoto(0, 1);
                  }
                  break;
@@ -145,6 +149,6 @@ void LCDWriteLevels(int volt){
     LCDPutChar(str[1]);
     LCDPutChar(str[2]);
     LCDPutChar(str[3]);
-    LCDPutChar("|");
+//    LCDPutChar("|");
 
 }
