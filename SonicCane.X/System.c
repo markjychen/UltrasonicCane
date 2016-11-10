@@ -179,6 +179,9 @@ int boxcar_filter(int data, int readIndex){
     total = total + readings[readIndex];
     readIndex = readIndex % windowSize;
     average = total / windowSize;
+    if (average == 0){
+        average = 0;
+    }
     return average;
 }
     
