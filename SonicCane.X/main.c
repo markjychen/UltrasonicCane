@@ -38,14 +38,9 @@ void main(void)
     ANSELB=0b00000000; //Digital IO
     LATB=0b00000000; //LEDs off
     TRISB=0b00000000; //LEDs are outputs
-    //if (isLeftBtnPressed){state = 0;}
-    //if (isRightBtnPressed){state++;}
 
     LATBbits.LATB1 = 1;
-    //LCDGoto(0, 0);
-    //LCDWriteStr("Demo: Continuous");
-    //LCDGoto(0, 1);
-    //LCDWriteStr("                ");
+
     while (1) {
         sendPulse(1);
         delayMillisecond(1);
@@ -62,19 +57,8 @@ void main(void)
         //LCDWriteStr(" ");
         //LCDWriteLevels(myVolt2 / 2);
         //LCDGoto(0, 1);
-        delayMillisecond(myVolt * 0.85);
+        delayMillisecond(myVolt);
 
     }
     
-}
-
-void LCDWriteLevels(int volt){
-    char str[4];
-    sprintf(str, "%04d", volt);
-    LCDPutChar(str[0]);
-    LCDPutChar(str[1]);
-    LCDPutChar(str[2]);
-    LCDPutChar(str[3]);
-//    LCDPutChar("|");
-
 }
