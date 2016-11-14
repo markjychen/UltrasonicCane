@@ -109,3 +109,35 @@ void motorInit(void){
     CCP1CONbits.P1M1 = 0;   // 
     T2CON = 0b00000111; // Prescale 1:16, timer on
 }
+
+
+void sendPWM2 (int val){
+    motorInit2();
+    TRISCbits.TRISC1 = 0;  //set PWM pin RC2 output  //hmm P1C
+    PR2 = 249;          // Timer2 period register = 250 counts //DC?
+    
+    CCPR2L = val;      // The 8 most sig bits of the period are 0x7D     
+                        // DC% = CCPR1L = % * PR2
+
+}  
+
+void stopPWM2(){
+    CCPR2L = 0;
+    //TRISCbits.TRISC2 = 1;
+    CCP2CONbits.CCP2M = 000;
+}
+             // Se
+void motorInit2(void){
+    //Set up PWM
+    TRISCbits.TRISC1 = 1;
+    CCP2CON = 0b01001100; // The 2 LSbs are 0b00, and CCP1Mz = 110 for PWM
+    CCP2CONbits.CCP2M0 = 0; //unused
+    CCP2CONbits.CCP2M1 = 0; //unused
+    CCP2CONbits.CCP2M2 = 1; //need for pwm
+    CCP2CONbits.CCP2M3 = 1; // need for pwm
+    CCP2CONbits.DC2B0 = 0;  // lower byte
+    CCP2CONbits.DC2B1 = 0;  // upper byte
+    CCP2CONbits.P2M0 = 0;   // unused???... unimplemented -> set 00
+    CCP2CONbits.P2M1 = 0;   // 
+    T2CON = 0b00000111; // Prescale 1:16, timer on
+}

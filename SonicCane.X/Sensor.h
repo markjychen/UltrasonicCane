@@ -68,10 +68,14 @@ struct Sensors{
 
 void analogInit(void);
 void motorInit(void);
+void motorInit2(void);
+
 void pulseInit(void);
 int analogRead(unsigned char);           // Analog Read from pin (argument)
 void sendPulse (int);           // Send number of pulses*/
 void sendPWM (int);             // Send duty cycle
 void stopPWM (void);
+void sendPWM2 (int);             // Send duty cycle
+void stopPWM2 (void);
 
 #endif
