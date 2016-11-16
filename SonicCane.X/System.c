@@ -3,7 +3,7 @@
 *
 *
 *********************************************************************
-* FileName:        Lcd.c
+* FileName:        System.c
 * Dependencies:    See INCLUDES section below
 * Processor: 	   PIC18F46K22
 * Compiler: 	   C-18
@@ -15,12 +15,12 @@
 *
 * Change History:
 * Author               Date        Comment
-* Chris Tucker      10/18/2010  First version of module code
+* Mark Chen      11/14/2016  First version of module code
 ********************************************************************/
 
 /**
-*   @file Lcd.c
-*   @brief This modules includes all service functions for LCD
+*   @file System.c.c
+*   @brief This modules includes all service functions for System
 *          operations.
 *   @defgroup LCD	LCD Display
 *
@@ -33,6 +33,7 @@
 #include "System.h"
 #include "Lcd.h"
 #include "Sensor.h"
+#include "Interrupts.h"
 //*****************************************************************************
 //                            CONSTANT DEFINITION
 //*****************************************************************************
@@ -42,6 +43,7 @@
 #define windowSize 5;
 int total = 0; 
 int readings[5];
+unsigned int ticks = 0;
 //int readings[windowSize] = {0,0,0,0,0};
 //*****************************************************************************
 //                                SUPPORT MACROS
@@ -53,14 +55,17 @@ int readings[5];
 
 void SysInit(void){
     OSCCON=0b01010110; //4 MHz internal oscillator
-    //LCDDisplayInit();
-    //LCDInit();
-    buttonInit();
+    
+    LCDDisplayInit();
+    LCDInit();
+    //buttonInit();
     analogInit();
     LEDInit();
     pulseInit();
     Tmr0Init();
     motorInit();
+    ISRInit();
+
 }
 void buttonInit(void){          // Set up buttons
     ANSELBbits.ANSB0=0; //Digital

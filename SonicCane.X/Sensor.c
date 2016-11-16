@@ -111,7 +111,7 @@ void motorInit(void){
 }
 
 
-void sendPWM2 (int val){
+/*void sendPWM2 (int val){
     motorInit2();
     TRISCbits.TRISC1 = 0;  //set PWM pin RC2 output  //hmm P1C
     PR2 = 249;          // Timer2 period register = 250 counts //DC?
@@ -140,4 +140,4 @@ void motorInit2(void){
     CCP2CONbits.P2M0 = 0;   // unused???... unimplemented -> set 00
     CCP2CONbits.P2M1 = 0;   // 
     T2CON = 0b00000111; // Prescale 1:16, timer on
-}
+}*/

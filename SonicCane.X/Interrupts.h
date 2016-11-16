@@ -14,7 +14,9 @@
 // Global Function Prototypes
 //*****************************************************************************
 
-void Pulse_ISR(void);
+void Sys_Tick_ISR(void);
 void High_Priority_ISR(void);
+void ISRInit(void);
+
 
 #endif
