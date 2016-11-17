@@ -103,9 +103,9 @@ void main(void)
                  break;
 
              case PULSE_RECORD_PWM:
-                 LCDGoto(0, 0);
-                 LCDWriteStr("Demo: P_R_PWM   ");
-                 LCDGoto(0, 1);
+                 //LCDGoto(0, 0);
+                 //LCDWriteStr("Demo: P_R_PWM   ");
+                 //LCDGoto(0, 1);
                  if (isBtnPressed() == 1){
                     sendPulse(3);
                     delayMillisecond(30);
@@ -113,20 +113,20 @@ void main(void)
                     myVolt2 = analogRead(2);
                     sendPWM(myVolt/4);
                     delayMillisecond(500);
-                    LCDWriteLevels(myVolt);
-                    LCDWriteStr(" ");
-                    LCDWriteLevels(myVolt2);
+                    //LCDWriteLevels(myVolt);
+                    //LCDWriteStr(" ");
+                    //LCDWriteLevels(myVolt2);
                     stopPWM();
                  }
                  //sendPWM(0);
                  break;
 
              case CONT_RECORD_PWM:
-                 LCDGoto(0, 0);
-                 LCDWriteStr("Demo: Continuous");
-                 LCDGoto(0, 1);
-                 LCDWriteStr("                ");
-                 while (isBtnPressed() != 1){
+                 //LCDGoto(0, 0);
+                 //LCDWriteStr("Demo: Continuous");
+                 //LCDGoto(0, 1);
+                 //LCDWriteStr("                ");
+                 while (1){
                      sendPulse(1);
                      delayMillisecond(1);
                      //myVolt = smooth(analogRead(0), 0.75 ,myVolt);
@@ -138,10 +138,10 @@ void main(void)
                      sendPWM(175);
                      delayMillisecond(50); //interrupt for 50ms pwm
                      stopPWM();
-                     LCDWriteLevels(myVolt/2);
-                     LCDWriteStr(" ");
-                     LCDWriteLevels(myVolt2/2);
-                     LCDGoto(0, 1);
+                     //LCDWriteLevels(myVolt/2);
+                     //LCDWriteStr(" ");
+                     //LCDWriteLevels(myVolt2/2);
+                     //LCDGoto(0, 1);
                      delayMillisecond(myVolt*0.85);
 
                  }
@@ -160,6 +160,6 @@ void LCDWriteLevels(int volt){
     LCDPutChar(str[1]);
     LCDPutChar(str[2]);
     LCDPutChar(str[3]);
-//    LCDPutChar("|");
+    LCDPutChar("|");
 
 }
