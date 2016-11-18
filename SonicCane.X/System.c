@@ -39,6 +39,7 @@
 #define TMRL_1ms 0x17;
 #define TMRH_1ms 0xFC; 
 
+extern unsigned int state;
 //*****************************************************************************
 //                                SUPPORT MACROS
 //*****************************************************************************
@@ -49,8 +50,8 @@
 
 void SysInit(void){
     OSCCON=0b01010110; //4 MHz internal oscillator
-    LCDDisplayInit();
-    LCDInit();
+    //LCDDisplayInit();
+    //LCDInit();
     buttonInit();
     analogInit();
     LEDInit();
@@ -141,7 +142,7 @@ int isBtnPressed(void){
     }
  return 0;
 }
-void enableSleep(){
+/*void enableSleep(){
     OSCCONbits.IDLEN = 0;
     INTCON3bits.INT1IE = 1;
     if (1==0){ //enableWDT
@@ -151,4 +152,4 @@ void enableSleep(){
     INTCON3bits.INT1F = 0;
     WDTCONbits.SWDTEN = 0;
     //LCDWriteStr("Awake!          ");
-}
+} //THIS IS CORRECT FOR BTN AT RB1*/

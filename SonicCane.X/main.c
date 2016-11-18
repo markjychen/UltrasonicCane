@@ -30,49 +30,92 @@
 //#define TMRH 0x9E
 
 void LCDWriteLevels(int);
-
+void btnISR(void);
+void High_Priority_ISR(void);
+void btnISRInit(void);
+void isr(void);
 int state = 0;
+
+#pragma code InterruptVectorHigh = 0x08
+
+#pragma interrupt High_Priority_ISR
+void High_Priority_ISR(void){
+    btnISR();
+}
+void btnISR(void){
+    if (INTCON3bits.INT1IF){
+        INTCON3bits.INT1IF = 0;
+        state++;
+    }
+}
+
+void btnISRInit(void){
+    
+    OSCCONbits.IDLEN = 0;
+
+    ANSELBbits.ANSB1 = 0;
+    TRISBbits.RB1 = 0;
+    
+    INTCON3bits.INT1IF = 0;
+    INTCON3bits.INT1IE = 1;
+    INTCON2bits.INTEDG1 = 1;
+    INTCON3bits.INT1F = 0;
+    INTCON3bits.INT1E = 1;
+    
+
+    //INTCONbits.RBIE = 1; //enable interrupt
+    INTCON2bits.RBPU = 0;
+   //  INTCONbits.INT0F = 0;
+    //INTCONbits.INT0E = 1;
+    INTCONbits.GIE = 1;
+    RCONbits.IPEN = 1;
+    INTCONbits.PEIE = 1;
+}
 
 void main(void)
 {
     char str[4];
     int volt = 0;
     int myVolt;
+    int myVolt2;
+    unsigned int headSensorFlag = 0;
+
     SysInit();
     LCDClear();
     LCDWriteStr("HIIII");
-    //if (isLeftBtnPressed){state = 0;}
-    //if (isRightBtnPressed){state++;}
+    btnISRInit();
+
+    
     while(1){
-         if (isBtnPressed()==1){
-             state++;
-         }
          switch (state%NO_OF_STATES) {
              case CONT_RECORD_PWM:
-                 LCDGoto(0, 0);
-                 LCDWriteStr("Demo: Continuous");
-                 LCDGoto(0, 1); 
-                 //LCDWriteStr("                ");
-                 LCDPutByte(state);
-                 //while (isBtnPressed() != 1){
-                     sendPulse(3);
-                     delayMillisecond(3);
-                     myVolt = analogRead(1);
-                     sendPWM(myVolt/4);
-                     delayMillisecond(500);
-                     LCDWriteLevels(analogRead(1));
-                     stopPWM();  
-                     delayMillisecond(100);
-                     LCDGoto(0, 1);
-                 //}
+                    sendPulse(1);
+                    delayMillisecond(40);
+                    myVolt = analogRead(1);//boxcar_filter (analogRead(1), index);
+                    //myVolt2 = analogRead(0);
+                    //if (myVolt2<200){
+                    //    headSensorFlag = 1;
+                    //    sendPWM(200);
+                    //    delayMillisecond(100);
+                    //    stopPWM();
+                    //}else{
+                    //    headSensorFlag = 0;
+                    //}
+                    //if (!headSensorFlag){
+                     sendPWM(150);
+                     delayMillisecond(50); //interrupt for 50ms pwm
+                     stopPWM();
+                     delayMillisecond(myVolt*2);
+                    //}
                  break;
                  
              case SLEEP_MODE:
-                 LCDGoto(0, 0);
-                 LCDWriteStr("Sleep until button");
-                 LCDGoto(0,1);
-                 LCDWriteStr("                ");
-                 enableSleep();
+                 stopPWM();
+                 //LCDGoto(0, 0);
+                 //LCDWriteStr("Sleep");
+                 //LCDGoto(0,1);
+                 //LCDPutByte(state);
+                 //enableSleep();
              default : //error
                  break;
         }
@@ -89,3 +132,8 @@ void LCDWriteLevels(int volt){
     LCDPutChar("|");
 
 }
+
+
+
+
+
