@@ -44,82 +44,12 @@ void main(void)
              state++;
          }
          switch (state%NO_OF_STATES) {
-             case STANDARD :
-                 //Start A/D Conversion
-                 LCDGoto(0, 0);
-                 LCDWriteStr("Demo: Pot ADC   ");
-                 LCDGoto(0, 1);
-                 LCDWriteLevels(analogRead(0));
-                 break;
-                 
-             case PULSE:
-                 LATAbits.LATA5 = 1;
-                 LATAbits.LATA3 = 0;
-                 LCDGoto(0, 0);
-                 LCDWriteStr("Demo: Pulse     ");
-                 LCDGoto(0, 1);
-                 if (isBtnPressed()==1){
-                    sendPulse(1);
-                 }
-                 break;
-                 
-             case PULSE_RECORD:
-                 //Todo: write pulse and record
-                 LATAbits.LATA5 = 1;
-                 LATAbits.LATA3 = 1;
-                 LCDGoto(0, 0);
-                 LCDWriteStr("Demo:PulseRecord");
-                 LCDGoto(0, 1);
-                 if (isBtnPressed() == 1){
-                    sendPulse(3);
-                    delayMillisecond(30);
-                    LCDWriteLevels(analogRead(1));
-                 }
-                 break;
-                 
-             case PWM:
-                 LCDGoto(0, 0);
-                 LCDWriteStr("Demo: PWM       ");
-                 LCDGoto(0, 1);  
-                 myVolt = analogRead(0)/4;
-                 sendPWM(myVolt);
-                 LCDWriteLevels(myVolt);
-                 break;
-                 
-             case DELAY_TEST:   //case not implemented
-                 LCDGoto(0, 0);
-                 LCDWriteStr("Demo: Timer     ");
-                 LCDGoto(0, 1);
-                 while(1){      //danger danger danger; no escape
-                    LATAbits.LATA5 = 1;
-                    delayMillisecond(1);
-                    LATAbits.LATA5 = 0;
-                    delayMillisecond(2);
-                 }
-                 break;
-                 
-             case PULSE_RECORD_PWM:
-                 LCDGoto(0, 0);
-                 LCDWriteStr("Demo: P_R_PWM   ");
-                 LCDGoto(0, 1);
-                 if (isBtnPressed() == 1){
-                    sendPulse(3);
-                    delayMillisecond(30);
-                    myVolt = analogRead(1);
-                    sendPWM(myVolt/4);
-                    delayMillisecond(500);
-                    LCDWriteLevels(analogRead(1));
-                    stopPWM();    
-                 }
-                 //sendPWM(0);
-                 break;
-                 
              case CONT_RECORD_PWM:
                  LCDGoto(0, 0);
                  LCDWriteStr("Demo: Continuous");
                  LCDGoto(0, 1); 
                  LCDWriteStr("                ");
-                 while (isBtnPressed() != 1){
+                 //while (isBtnPressed() != 1){
                      sendPulse(3);
                      delayMillisecond(3);
                      myVolt = analogRead(1);
@@ -129,9 +59,15 @@ void main(void)
                      stopPWM();  
                      delayMillisecond(100);
                      LCDGoto(0, 1);
-                 }
+                 //}
                  break;
                  
+             case SLEEP_MODE:
+                 LCDGoto(0, 0);
+                 LCDWriteStr("Sleep until button");
+                 LCDGoto(0,1);
+                 LCDWriteStr("                ");
+                 enableSleep();
              default : //error
                  break;
         }
