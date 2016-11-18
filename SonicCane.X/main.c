@@ -16,14 +16,16 @@
 #define LOWBYTE(v)   ((unsigned char) (v))
 #define HIGHBYTE(v)  ((unsigned char) (((unsigned int) (v)) >> 8))
 
-#define STANDARD 0
-#define PULSE 1
-#define PULSE_RECORD 2
-#define PWM 3
+#define STANDARD 01111
+#define PULSE 6666
+#define PULSE_RECORD 777
+#define PWM 888
 #define DELAY_TEST 999
 #define PULSE_RECORD_PWM 4
-#define CONT_RECORD_PWM 5
-#define NO_OF_STATES 6
+
+#define CONT_RECORD_PWM 0
+#define SLEEP_MODE 1
+#define NO_OF_STATES 2
 //#define TMRL 0x58
 //#define TMRH 0x9E
 
@@ -37,10 +39,12 @@ void main(void)
     int volt = 0;
     int myVolt;
     SysInit();
+    LCDClear();
+    LCDWriteStr("HIIII");
     //if (isLeftBtnPressed){state = 0;}
     //if (isRightBtnPressed){state++;}
     while(1){
-         if (isRightBtnPressed()==1){
+         if (isBtnPressed()==1){
              state++;
          }
          switch (state%NO_OF_STATES) {
@@ -48,7 +52,8 @@ void main(void)
                  LCDGoto(0, 0);
                  LCDWriteStr("Demo: Continuous");
                  LCDGoto(0, 1); 
-                 LCDWriteStr("                ");
+                 //LCDWriteStr("                ");
+                 LCDPutByte(state);
                  //while (isBtnPressed() != 1){
                      sendPulse(3);
                      delayMillisecond(3);
