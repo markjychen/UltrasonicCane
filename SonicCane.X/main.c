@@ -17,59 +17,57 @@
 #define HIGHBYTE(v)  ((unsigned char) (((unsigned int) (v)) >> 8))
 #define One_ms_h 0xF2;
 #define One_ms_l 0xE3;
-/*#define STANDARD 0
-#define PULSE 1
-#define PULSE_RECORD 2
-#define PWM 3
-#define DELAY_TEST 999
-#define PULSE_RECORD_PWM 4
-#define CONT_RECORD_PWM 5
-#define NO_OF_STATES 6
-//#define TMRL 0x58
-//#define TMRH 0x9E
+#define STANDARD 0
+#define SLEEP_MODE 1
+#define NUM_OF_STATES = 2
 
-int state = CONT_RECORD_PWM;
-*/
-
-
+unsigned int state = STANDARD;
 unsigned int timeToFire = 0;
 
 
 void main(void)
 {
+
     ANSELBbits.ANSB5 = 0;
     TRISBbits.RB5 = 0;
     ANSELBbits.ANSB4 = 0;
     TRISBbits.RB4 = 0;
     SysInit();
+    INTCONbits.GIE=0;           // Enable interrupts
+    delayMillisecond(1000);
     ISRInit();
-    //ISRInit();
-    //LATBbits.LATB1 = 1;
+    headMotorInit();
+    btnISRInit();
+    LATDbits.LATD5 = 0;
 
     while (1) {
-        //LATBbits.LATB5 = ~LATBbits.LATB5;
-        //LATBbits.LATB2 = 0;
-        /*sendPulse(1);
-        delayMillisecond(1);
-        //myVolt = smooth(analogRead(0), 0.75 ,myVolt);
-        myVolt = analogRead(1); //boxcar_filter (analogRead(1), index);
-        //myVolt2 = analogRead(2);
-        //myVolt2 = boxcar_filter(analogRead(0), index);
-        //index++;
-        //index = index % 5;
-        sendPWM(225);
-        delayMillisecond(50); //interrupt for 50ms pwm
-        stopPWM();
-        //LCDWriteLevels(myVolt / 2);
-        //LCDWriteStr(" ");
-        //LCDWriteLevels(myVolt2 / 2);
-        //LCDGoto(0, 1);
-        delayMillisecond(myVolt);*/
-        //LCDGoto(0, 0);
-        sendPulse(1);
-        //delayMillisecond(40);
-        timeToFire = (analogRead(1)+50)*6;
-        //delayMillisecond(30);
+
+        switch (state%NUM_OF_STATES) {
+             case STANDARD:
+                 LATAbits.LATA3 = 1;
+                 sendPulse(1);
+                 //delayMillisecond(40);
+                 timeToFire = (analogRead(1)+50)*6;
+                 if (analogRead(2) < 60){
+                     sendHeadWarning(0);
+                 }else{
+                     LATDbits.LATD5 = 0;
+                 }
+                 break;
+                 
+             case SLEEP_MODE:
+                 LATAbits.LATA3 = 0;
+                 LATDbits.LATD5 = 0;
+                 stopPWM();
+                 //LCDGoto(0, 0);
+                 //LCDWriteStr("Sleep");
+                 //LCDGoto(0,1);
+                 //LCDPutByte(state);
+                 //enableSleep();
+             default : //error
+                 break;
+}
+        
     }
     
 }

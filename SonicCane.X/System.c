@@ -64,6 +64,7 @@ void SysInit(void){
     pulseInit();
     Tmr0Init();
     motorInit();
+    headMotorInit();
     //ISRInit();
 
 }

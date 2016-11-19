@@ -41,11 +41,12 @@
 //Variable definitions
 unsigned int delayFireTick;
 
-unsigned int delayAnalogRead;
+unsigned int analogReadTick;
 unsigned int delayPulseTick; //questionable
 unsigned int isPWMFireFlag;
 
 extern unsigned int timeToFire;
+extern unsigned int state;
 
 //PWM Controls
 unsigned int PWMFireFlag;
@@ -66,6 +67,7 @@ void InterruptVectorHigh (void)
 #pragma interrupt High_Priority_ISR
 void High_Priority_ISR(void) 
 {
+    btnISR();
     Sys_Tick_ISR(); //Call real-time clock service routine
 }
 
@@ -92,6 +94,36 @@ void ISRInit(void)
     timeToFire = 1000;
 }
 
+void btnISRInit(void){
+    
+    OSCCONbits.IDLEN = 0;
+
+    ANSELBbits.ANSB1 = 0;
+    TRISBbits.RB1 = 0;
+    
+    INTCON3bits.INT1IF = 0;
+    INTCON3bits.INT1IE = 1;
+    INTCON2bits.INTEDG1 = 1;
+    INTCON3bits.INT1F = 0;
+    INTCON3bits.INT1E = 1;
+    
+
+    //INTCONbits.RBIE = 1; //enable interrupt
+    INTCON2bits.RBPU = 0;
+   //  INTCONbits.INT0F = 0;
+    //INTCONbits.INT0E = 1;
+    INTCONbits.GIE = 1;
+    RCONbits.IPEN = 1;
+    INTCONbits.PEIE = 1;
+}
+
+void btnISR(void){
+    if (INTCON3bits.INT1IF){
+        INTCON3bits.INT1IF = 0;
+        state++;
+    }
+}
+
 //Called every millisecond by the interrupt
 //int timeToFire;
 
@@ -108,13 +140,17 @@ void Sys_Tick_ISR (void)
         
         // List of counters:
         delayFireTick++;
-        //delayAnalogRead++;
+        analogReadTick++;
         /*ticks++;
         ticks2++;
         */
         
         //List of functions to fire:
-       
+        if (analogReadTick > 49){
+            
+        }
+        
+        
         if (delayFireTick>timeToFire){//timeToFire){
             //sendPWM(200);
             //sendPWM(200);
@@ -138,6 +174,7 @@ void Sys_Tick_ISR (void)
         //if (PWMFireFlag==0){
         //    stopPWM();
         //}
+        
     }
     
 }
