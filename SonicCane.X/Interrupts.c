@@ -40,11 +40,18 @@
 
 //Variable definitions
 unsigned int delayFireTick;
-unsigned int delayPWMFireTick;
+
 unsigned int delayAnalogRead;
 unsigned int delayPulseTick; //questionable
 unsigned int isPWMFireFlag;
+
 extern unsigned int timeToFire;
+
+//PWM Controls
+unsigned int PWMFireFlag;
+unsigned int PWMTime;
+unsigned int delayPWMFireTick;
+
 
 //Function definitions
 //High priority interrupt
@@ -80,8 +87,9 @@ void ISRInit(void)
     PIR1bits.TMR1IF = 0;        // Clear any pending Timer 1 Interrupt indication
     PIE1bits.TMR1IE = 1;        // Enable Timer 1 Interrupt
     INTCONbits.GIE=1;           // Enable interrupts
-    isPWMFireFlag = 0;
+    PWMFireFlag = 0;
 
+    timeToFire = 1000;
 }
 
 //Called every millisecond by the interrupt
@@ -100,26 +108,36 @@ void Sys_Tick_ISR (void)
         
         // List of counters:
         delayFireTick++;
-        delayAnalogRead++;
+        //delayAnalogRead++;
         /*ticks++;
         ticks2++;
         */
         
         //List of functions to fire:
        
-        if (delayFireTick>timeToFire){
+        if (delayFireTick>timeToFire){//timeToFire){
             //sendPWM(200);
             //sendPWM(200);
-            delayPWMFireTick = 0;
-            LATBbits.LATB4 = ~LATBbits.LATB4;
+            //delayPWMFireTick = 0;
+            delayFireTick = 0;
+            PWMFireFlag = 1;
+            PWMTime = 0;
+            sendPWM(190);
+            //stopPWM();
+            //LATBbits.LATB3 = ~LATBbits.LATB3;
+            //sendPulse(1);
         }
-        if (isPWMFireFlag == 1){
-            delayPWMFireTick++;
+        if (PWMFireFlag == 1){
+            PWMTime++;
         }
-        if (delayPWMFireTick >= 50){
-            isPWMFireFlag = 0;
+        if (PWMTime >= 75){
+            PWMFireFlag = 0;
             stopPWM();
+            PWMTime = 0;
         }
+        //if (PWMFireFlag==0){
+        //    stopPWM();
+        //}
     }
     
 }

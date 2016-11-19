@@ -42,6 +42,7 @@ void main(void)
     ANSELBbits.ANSB4 = 0;
     TRISBbits.RB4 = 0;
     SysInit();
+    ISRInit();
     //ISRInit();
     //LATBbits.LATB1 = 1;
 
@@ -64,8 +65,8 @@ void main(void)
         //LCDWriteLevels(myVolt2 / 2);
         //LCDGoto(0, 1);
         delayMillisecond(myVolt);*/
-        LCDGoto(0, 0);
-        timeToFire = analogRead(0) * 2 + 200;
+        //LCDGoto(0, 0);
+        timeToFire = (analogRead(0)+100)*4.5;
     }
     
 }

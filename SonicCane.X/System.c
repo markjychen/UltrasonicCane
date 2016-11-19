@@ -64,7 +64,7 @@ void SysInit(void){
     pulseInit();
     Tmr0Init();
     motorInit();
-    ISRInit();
+    //ISRInit();
 
 }
 void buttonInit(void){          // Set up buttons
