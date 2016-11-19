@@ -95,13 +95,11 @@ void main(void)
                     myVolt2 = analogRead(2);
                     if (myVolt2<60){
                         headSensorFlag = 1;
-                        sendPWM(200);
-                        delayMillisecond(100);
-                        stopPWM();
+                        sendHeadWarning(50);
                     }else{
                         headSensorFlag = 0;
                     }
-                    if (1==0){//!headSensorFlag){
+                    if (!headSensorFlag){
                      sendPWM(150);
                      delayMillisecond(50); //interrupt for 50ms pwm
                      stopPWM();

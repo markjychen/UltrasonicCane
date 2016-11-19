@@ -109,3 +109,14 @@ void motorInit(void){
     CCP1CONbits.P1M1 = 0;   // 
     T2CON = 0b00000111; // Prescale 1:16, timer on
 }
+
+void headMotorInit(void){
+    TRISDbits.RD5 = 0;
+    ANSELDbits.ANSD5 = 0;
+    LATDbits.LATD5 = 0;
+}
+void sendHeadWarning(int ms){
+    LATDbits.LATD5 = 1;
+    delayMillisecond (100);
+    LATDbits.LATD5 = 0;
+}
