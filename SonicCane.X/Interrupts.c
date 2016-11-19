@@ -122,7 +122,7 @@ void Sys_Tick_ISR (void)
             delayFireTick = 0;
             PWMFireFlag = 1;
             PWMTime = 0;
-            sendPWM(190);
+            sendPWM(200);
             //stopPWM();
             //LATBbits.LATB3 = ~LATBbits.LATB3;
             //sendPulse(1);
