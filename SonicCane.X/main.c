@@ -66,7 +66,10 @@ void main(void)
         //LCDGoto(0, 1);
         delayMillisecond(myVolt);*/
         //LCDGoto(0, 0);
-        timeToFire = (analogRead(0)+100)*4.5;
+        sendPulse(1);
+        //delayMillisecond(40);
+        timeToFire = (analogRead(1)+50)*6;
+        //delayMillisecond(30);
     }
     
 }
