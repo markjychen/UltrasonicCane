@@ -92,21 +92,21 @@ void main(void)
                     sendPulse(1);
                     delayMillisecond(40);
                     myVolt = analogRead(1);//boxcar_filter (analogRead(1), index);
-                    //myVolt2 = analogRead(0);
-                    //if (myVolt2<200){
-                    //    headSensorFlag = 1;
-                    //    sendPWM(200);
-                    //    delayMillisecond(100);
-                    //    stopPWM();
-                    //}else{
-                    //    headSensorFlag = 0;
-                    //}
-                    //if (!headSensorFlag){
+                    myVolt2 = analogRead(2);
+                    if (myVolt2<60){
+                        headSensorFlag = 1;
+                        sendPWM(200);
+                        delayMillisecond(100);
+                        stopPWM();
+                    }else{
+                        headSensorFlag = 0;
+                    }
+                    if (1==0){//!headSensorFlag){
                      sendPWM(150);
                      delayMillisecond(50); //interrupt for 50ms pwm
                      stopPWM();
                      delayMillisecond(myVolt*2);
-                    //}
+                    }
                  break;
                  
              case SLEEP_MODE:
