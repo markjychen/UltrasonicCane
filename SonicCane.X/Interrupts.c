@@ -47,12 +47,19 @@ unsigned int isPWMFireFlag;
 
 extern unsigned int timeToFire;
 extern unsigned int state;
+extern unsigned int dataReadyFlag1;
+extern unsigned int dataReadyFlag2;
+extern unsigned int sendHeadFlag;
 
 //PWM Controls
 unsigned int PWMFireFlag;
 unsigned int PWMTime;
 unsigned int delayPWMFireTick;
 
+//analog read
+unsigned int dataReadyTick1;
+unsigned int dataReadyTick2;
+unsigned int sendPulseFlag = 0;
 
 //Function definitions
 //High priority interrupt
@@ -141,15 +148,32 @@ void Sys_Tick_ISR (void)
         // List of counters:
         delayFireTick++;
         analogReadTick++;
-        /*ticks++;
-        ticks2++;
-        */
+        
+        dataReadyTick1++;
+        dataReadyTick2++;
         
         //List of functions to fire:
-        if (analogReadTick > 49){
-            
+        if (analogReadTick > 110){
+            analogReadTick = 0;
+            dataReadyTick1 = 0;
+            dataReadyTick2 = 0;
+            sendPulseFlag = 1;
         }
-        
+        if (sendPulseFlag == 1){
+            LATBbits.LATB3 = 1;
+            sendPulseFlag = 0;
+        }else{
+            LATBbits.LATB3 = 0;
+        }
+        if (dataReadyTick1 > 42){
+            dataReadyFlag1 = 1;
+        }
+        if (dataReadyTick2 > 84){
+            dataReadyFlag2 = 1;
+        }
+        if (sendHeadFlag){
+            sendHeadWarning(0);
+        }
         
         if (delayFireTick>timeToFire){//timeToFire){
             //sendPWM(200);

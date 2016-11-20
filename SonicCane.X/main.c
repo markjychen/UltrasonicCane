@@ -19,11 +19,16 @@
 #define One_ms_l 0xE3;
 #define STANDARD 0
 #define SLEEP_MODE 1
+#define HEAD_ONLY 4
+#define RANGE_ONLY 3
 #define NUM_OF_STATES = 2
 
 unsigned int state = STANDARD;
 unsigned int timeToFire = 0;
-
+unsigned int dataReadyFlag1 = 0;
+unsigned int dataReadyFlag2 = 0;
+unsigned int sendHeadFlag = 0;
+unsigned int headSensorVal = 0;
 
 void main(void)
 {
@@ -44,17 +49,49 @@ void main(void)
 
         switch (state%NUM_OF_STATES) {
              case STANDARD:
-                 LATAbits.LATA3 = 1;
-                 sendPulse(1);
+                 LATAbits.LATA3 = 0;
+                 //sendPulse(1);
                  //delayMillisecond(40);
-                 timeToFire = (analogRead(1)+50)*6;
-                 if (analogRead(2) < 60){
-                     sendHeadWarning(0);
-                 }else{
-                     LATDbits.LATD5 = 0;
+                 if (dataReadyFlag1){
+                    timeToFire = (analogRead(1)+50)*6;//*6
+                    dataReadyFlag1 = 0;
                  }
+                 if (dataReadyFlag2){
+                     headSensorVal = analogRead(2);
+                     if (headSensorVal < 60){
+                         sendHeadFlag  = 1;
+                     }else{
+                         sendHeadFlag = 0;
+                         LATDbits.LATD5 = 0;
+                     }
+                     dataReadyFlag2 = 0;
+                 }
+                 //if (analogRead(2) < 60){
+                 //    sendHeadWarning(0);
+                 //}else{
+                 //    LATDbits.LATD5 = 0;
+                // }
                  break;
                  
+            case HEAD_ONLY:
+                LATAbits.LATA3 = 1;
+                stopPWM();
+                 if (dataReadyFlag1){
+                    timeToFire = (analogRead(1)+50)*6;//*6
+                    dataReadyFlag1 = 0;
+                 }
+                 if (dataReadyFlag2){
+                     headSensorVal = analogRead(2);
+                     if (headSensorVal < 60){
+                         sendHeadFlag  = 1;
+                     }else{
+                         sendHeadFlag = 0;
+                         LATDbits.LATD5 = 0;
+                     }
+                     dataReadyFlag2 = 0;
+                 }
+                
+                break;
              case SLEEP_MODE:
                  LATAbits.LATA3 = 0;
                  LATDbits.LATD5 = 0;

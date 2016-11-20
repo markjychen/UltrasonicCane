@@ -56,9 +56,9 @@ unsigned int ticks = 0;
 void SysInit(void){
     OSCCON=0b01010110; //4 MHz internal oscillator
     
-    LCDDisplayInit();
-    LCDInit();
-    //buttonInit();
+    //LCDDisplayInit();
+    //LCDInit();
+    buttonInit();
     analogInit();
     LEDInit();
     pulseInit();

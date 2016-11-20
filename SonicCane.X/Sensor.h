@@ -77,5 +77,7 @@ void sendPWM (int);             // Send duty cycle
 void stopPWM (void);
 void sendPWM2 (int);             // Send duty cycle
 void stopPWM2 (void);
+void headMotorInit(void);
+void sendHeadWarning(int);
 
 #endif
