@@ -18,6 +18,7 @@ void Sys_Tick_ISR(void);
 void High_Priority_ISR(void);
 void ISRInit(void);
 void btnISR(void);
+void btn2ISR(void);
 void btnISRInit(void);
 
 #endif

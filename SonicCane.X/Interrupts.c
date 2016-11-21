@@ -50,6 +50,9 @@ extern unsigned int state;
 extern unsigned int dataReadyFlag1;
 extern unsigned int dataReadyFlag2;
 extern unsigned int sendHeadFlag;
+extern unsigned int casePWM;
+extern unsigned int sleep_mode;
+extern unsigned int didStateChange;
 
 //PWM Controls
 unsigned int PWMFireFlag;
@@ -75,6 +78,7 @@ void InterruptVectorHigh (void)
 void High_Priority_ISR(void) 
 {
     btnISR();
+    btn2ISR();
     Sys_Tick_ISR(); //Call real-time clock service routine
 }
 
@@ -122,12 +126,35 @@ void btnISRInit(void){
     INTCONbits.GIE = 1;
     RCONbits.IPEN = 1;
     INTCONbits.PEIE = 1;
+    
+    
+    //btn2
+    ANSELBbits.ANSB0 = 0;
+    TRISBbits.RB0 = 0;
+    
+    INTCONbits.INT0IF = 0;
+    INTCONbits.INT0IE = 0;
+    INTCON2bits.INTEDG0 = 1;
+    INTCONbits.INT0F = 0;
+    INTCONbits.INT0E = 1;
+
 }
 
 void btnISR(void){
     if (INTCON3bits.INT1IF){
         INTCON3bits.INT1IF = 0;
         state++;
+        didStateChange = 1;
+        Delay10KTCYx(10);
+    }
+}
+
+void btn2ISR(void){
+    if (INTCONbits.INT0IF){
+        INTCONbits.INT0IF = 0;
+        state = sleep_mode;
+        didStateChange = 1;
+        Delay10KTCYx(10);
     }
 }
 
@@ -146,9 +173,9 @@ void Sys_Tick_ISR (void)
         INTCONbits.INT0IF = 0;      // Clear interrupt flag
         
         // List of counters:
-        delayFireTick++;
-        analogReadTick++;
+        if (casePWM==1){delayFireTick++;}else{delayFireTick = 0;}
         
+        analogReadTick++;        
         dataReadyTick1++;
         dataReadyTick2++;
         
@@ -175,17 +202,11 @@ void Sys_Tick_ISR (void)
             sendHeadWarning(0);
         }
         
-        if (delayFireTick>timeToFire){//timeToFire){
-            //sendPWM(200);
-            //sendPWM(200);
-            //delayPWMFireTick = 0;
+        if (delayFireTick>timeToFire){
             delayFireTick = 0;
             PWMFireFlag = 1;
             PWMTime = 0;
             sendPWM(200);
-            //stopPWM();
-            //LATBbits.LATB3 = ~LATBbits.LATB3;
-            //sendPulse(1);
         }
         if (PWMFireFlag == 1){
             PWMTime++;
@@ -195,9 +216,6 @@ void Sys_Tick_ISR (void)
             stopPWM();
             PWMTime = 0;
         }
-        //if (PWMFireFlag==0){
-        //    stopPWM();
-        //}
         
     }
     
