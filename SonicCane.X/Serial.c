@@ -101,8 +101,10 @@ void Serial_ISR (void)
 
   if((PIR1bits.TXIF) && (PIE1bits.TXIE))    // If end of transmit
   {
+
     if (SERTxDatAvail())             // If data available for output
 	{
+        LATBbits.LATB5 = ~LATBbits.LATB5;
       	SERSendNext();               // Go send next available character
 	}
   } 

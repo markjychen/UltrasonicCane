@@ -9,6 +9,8 @@
 //#include "System.h"
 #include "Interrupts.h"
 #include "Serial.h"
+#include "General.h"
+
 
 #pragma config FOSC = INTIO67   // Internal OSC block, Port Function on RA6/7
 #pragma config WDTEN = OFF      // Watch Dog Timer disabled. SWDTEN no effect
@@ -37,28 +39,29 @@ unsigned int volt = 0;
 
 void main(void)
 {
-
+    unsigned int volt;
+    char input;
+    char str[4];
     ANSELBbits.ANSB5 = 0;
     TRISBbits.RB5 = 0;
     ANSELBbits.ANSB4 = 0;
     TRISBbits.RB4 = 0;
     SysInit();
+    OSCCON = 0b01010110;
     INTCONbits.GIE=0;           // Disable interrupts
     delayMillisecond(1000);
-    ISRInit();
-    headMotorInit();
-    btnISRInit();
+    //ISRInit();
+    //headMotorInit();
+    //btnISRInit();
     LATDbits.LATD5 = 0;
     
+    
+    SERTxSave('\r');		 // Carriage return
+    SERTxSave('\n');		 // Line Feed
 
-    //SERIAL STUFF 
-    ANSELCbits.ANSC6 = 0;
-    ANSELCbits.ANSC7 = 0;
-    TRISCbits.RC6=1;
-    TRISCbits.RC7=1;
-    IPR1bits.RC1IP = 1; //High priority
-    IPR1bits.TX1IP = 1;
-    SERInit();
+    SERTxSave('\r');
+    SERTxSave('\n');
+    SERSendStr("Voltage");
   /*
     SERInit();			 // Initialized Serieal Come
     SERTxSave('\r');		 // Carriage return
@@ -71,18 +74,13 @@ void main(void)
     LCDWriteStr("Voltage:");
     */
     while (1) {
-                SERTxSave('\r');
-                SERTxSave('\n');
-                //SERTxSave(volt);
-                SERTxSave('.');
-    }
-        /* switch (state%NUM_OF_STATES) {
+        INTCONbits.GIE=1;           // Enable interrupts
+        switch (state%NUM_OF_STATES) {
              case STANDARD:
                  LATAbits.LATA3 = 1; 
                  LATAbits.LATA5 = 1;
                  casePWM = 1;
-                 //sendPulse(1);
-                 //delayMillisecond(40);
+
                  if (dataReadyFlag1){
                      volt = analogRead(0);
                      if (volt<66){
@@ -109,12 +107,13 @@ void main(void)
                  
                 SERTxSave('\r');
                 SERTxSave('\n');
-                //SERTxSave(volt);
                 SERTxSave('.');
+                Delay10KTCYx(25); //Wait a little bit
+
                  break;
                  
             case HEAD_ONLY:
-                /*if (didStateChange==1){
+                if (didStateChange==1){
                     INTCONbits.GIE=0;           // Disable interrupts
                     didStateChange = 0;
                     sendPWM(150);
@@ -124,16 +123,16 @@ void main(void)
                     delayMillisecond(100);
                     stopPWM();
                     INTCONbits.GIE=1;           // Enable interrupts
-                }*/
-                LATAbits.LATA3 = 1;
-                LATAbits.LATA5 = 0;
-                casePWM = 0;
+                }
+                //LATAbits.LATA3 = 1;
+                //LATAbits.LATA5 = 0;
+                //casePWM = 0;
                 //stopPWM();
-                 /*if (dataReadyFlag1){
-                    timeToFire = (analogRead(1)+50)*6;//*6
+                 if (dataReadyFlag1){
+                    //timeToFire = (analogRead(1)+50)*6;//*6
                     dataReadyFlag1 = 0;
-                 }*/
-                 /*if (dataReadyFlag2){
+                 }
+                 if (dataReadyFlag2){
                      headSensorVal = analogRead(2);
                      if (headSensorVal < 90){
                          sendHeadFlag  = 1;
@@ -146,18 +145,18 @@ void main(void)
                 
                 break;
             case RANGE_ONLY:
-                /*if (didStateChange==1){
+                if (didStateChange==1){
                     INTCONbits.GIE=0;           // Disable interrupts
                     didStateChange = 0;
-                    sendPWM(150);
-                    delayMillisecond(100);
-                    stopPWM();
-                    sendPWM(150);
-                    delayMillisecond(100);
+                    //sendPWM(150);
+                    //delayMillisecond(100);
+                    //stopPWM();
+                    //sendPWM(150);
+                    //delayMillisecond(100);
                     stopPWM();
                     INTCONbits.GIE=1;           // Enable interrupts
-                }*/
-                /*casePWM = 1;
+                }
+                casePWM = 1;
                 LATAbits.LATA3 = 0;
                 LATAbits.LATA5 = 1;
                 sendHeadFlag = 0;
@@ -186,8 +185,8 @@ void main(void)
                  break;
              default : //error
                  break;
-}*/
+}
         
-    //}
+    }
     
 }

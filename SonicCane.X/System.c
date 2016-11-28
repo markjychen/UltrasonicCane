@@ -67,7 +67,8 @@ void SysInit(void){
     Tmr0Init();
     motorInit();
     headMotorInit();
-    //ISRInit();
+    ISRInit();
+    serialISRInit();
 
 }
 void buttonInit(void){          // Set up buttons

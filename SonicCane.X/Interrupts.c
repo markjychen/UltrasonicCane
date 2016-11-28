@@ -77,12 +77,10 @@ void InterruptVectorHigh (void)
 #pragma interrupt High_Priority_ISR
 void High_Priority_ISR(void) 
 {
-    //btnISR();
-    //btn2ISR();
+    btnISR();
+    btn2ISR();
     Serial_ISR();
-    //Sys_Tick_ISR(); //Call real-time clock service routine
-    //Serial_ISR();
-
+    Sys_Tick_ISR(); //Call real-time clock service routine
 }
 
 //Initialize necessary systems
@@ -106,6 +104,23 @@ void ISRInit(void)
     PWMFireFlag = 0;
 
     timeToFire = 1000;
+}
+
+void serialISRInit(void){
+    //SERIAL STUFF 
+    ANSELCbits.ANSC6 = 0;
+    ANSELCbits.ANSC7 = 0;
+    ANSELC=0x00;
+    ANSELD = 0x00;
+    TRISD = 0x00; //Digital out
+    TRISCbits.RC6=1;
+    TRISCbits.RC7=1;
+    IPR1bits.RC1IP = 1; //High priority
+    IPR1bits.TX1IP = 1;
+    
+    RCONbits.IPEN = 1;
+    INTCONbits.GIEH = 1;
+    SERInit();
 }
 
 void btnISRInit(void){
@@ -171,7 +186,7 @@ void Sys_Tick_ISR (void)
         TMR1H = One_ms_h;          // Reset timer to one millisecond
         TMR1L = One_ms_l;
         //RTCIncSec();                // Increment count
-        LATBbits.LATB5 = ~LATBbits.LATB5;
+        //LATBbits.LATB5 = ~LATBbits.LATB5;
         PIR1bits.TMR1IF = 0;        // Clear timer flag
         INTCONbits.INT0IF = 0;      // Clear interrupt flag
         
@@ -183,7 +198,7 @@ void Sys_Tick_ISR (void)
         dataReadyTick2++;
         
         //List of functions to fire:
-        if (analogReadTick > 110){
+        if (analogReadTick >= 110){
             analogReadTick = 0;
             dataReadyTick1 = 0;
             dataReadyTick2 = 0;
