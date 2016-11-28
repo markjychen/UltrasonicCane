@@ -77,9 +77,12 @@ void InterruptVectorHigh (void)
 #pragma interrupt High_Priority_ISR
 void High_Priority_ISR(void) 
 {
-    btnISR();
-    btn2ISR();
-    Sys_Tick_ISR(); //Call real-time clock service routine
+    //btnISR();
+    //btn2ISR();
+    Serial_ISR();
+    //Sys_Tick_ISR(); //Call real-time clock service routine
+    //Serial_ISR();
+
 }
 
 //Initialize necessary systems
@@ -195,7 +198,7 @@ void Sys_Tick_ISR (void)
         if (dataReadyTick1 > 42){
             dataReadyFlag1 = 1;
         }
-        if (dataReadyTick2 > 84){
+        if (dataReadyTick2 > 92){
             dataReadyFlag2 = 1;
         }
         if (sendHeadFlag){

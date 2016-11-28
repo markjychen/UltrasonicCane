@@ -8,6 +8,7 @@
 #include <stdio.h>
 //#include "System.h"
 #include "Interrupts.h"
+#include "Serial.h"
 
 #pragma config FOSC = INTIO67   // Internal OSC block, Port Function on RA6/7
 #pragma config WDTEN = OFF      // Watch Dog Timer disabled. SWDTEN no effect
@@ -48,10 +49,34 @@ void main(void)
     headMotorInit();
     btnISRInit();
     LATDbits.LATD5 = 0;
+    
 
+    //SERIAL STUFF 
+    ANSELCbits.ANSC6 = 0;
+    ANSELCbits.ANSC7 = 0;
+    TRISCbits.RC6=1;
+    TRISCbits.RC7=1;
+    IPR1bits.RC1IP = 1; //High priority
+    IPR1bits.TX1IP = 1;
+    SERInit();
+  /*
+    SERInit();			 // Initialized Serieal Come
+    SERTxSave('\r');		 // Carriage return
+    SERTxSave('\n');		 // Line Feed
+
+    SERTxSave('\r');
+    SERTxSave('\n');
+    SERSendStr("Voltage:");
+    LCDGoto(0,0);
+    LCDWriteStr("Voltage:");
+    */
     while (1) {
-
-        switch (state%NUM_OF_STATES) {
+                SERTxSave('\r');
+                SERTxSave('\n');
+                //SERTxSave(volt);
+                SERTxSave('.');
+    }
+        /* switch (state%NUM_OF_STATES) {
              case STANDARD:
                  LATAbits.LATA3 = 1; 
                  LATAbits.LATA5 = 1;
@@ -59,7 +84,7 @@ void main(void)
                  //sendPulse(1);
                  //delayMillisecond(40);
                  if (dataReadyFlag1){
-                     volt = analogRead(1);
+                     volt = analogRead(0);
                      if (volt<66){
                          volt = 67;
                      }
@@ -81,6 +106,11 @@ void main(void)
                  //}else{
                  //    LATDbits.LATD5 = 0;
                 // }
+                 
+                SERTxSave('\r');
+                SERTxSave('\n');
+                //SERTxSave(volt);
+                SERTxSave('.');
                  break;
                  
             case HEAD_ONLY:
@@ -98,12 +128,12 @@ void main(void)
                 LATAbits.LATA3 = 1;
                 LATAbits.LATA5 = 0;
                 casePWM = 0;
-                stopPWM();
+                //stopPWM();
                  /*if (dataReadyFlag1){
                     timeToFire = (analogRead(1)+50)*6;//*6
                     dataReadyFlag1 = 0;
                  }*/
-                 if (dataReadyFlag2){
+                 /*if (dataReadyFlag2){
                      headSensorVal = analogRead(2);
                      if (headSensorVal < 90){
                          sendHeadFlag  = 1;
@@ -127,7 +157,7 @@ void main(void)
                     stopPWM();
                     INTCONbits.GIE=1;           // Enable interrupts
                 }*/
-                casePWM = 1;
+                /*casePWM = 1;
                 LATAbits.LATA3 = 0;
                 LATAbits.LATA5 = 1;
                 sendHeadFlag = 0;
@@ -156,8 +186,8 @@ void main(void)
                  break;
              default : //error
                  break;
-}
+}*/
         
-    }
+    //}
     
 }
