@@ -104,10 +104,15 @@ void main(void)
                  //}else{
                  //    LATDbits.LATD5 = 0;
                 // }
-                 
+                
+                sprintf(str,"%04d",volt); //Approximate conversion to 0-5V
+
+                SERTxSave(str[0]);
+                SERTxSave(str[1]);
+                SERTxSave(str[2]);
+                SERTxSave(str[3]);
                 SERTxSave('\r');
                 SERTxSave('\n');
-                SERTxSave('.');
                 Delay10KTCYx(25); //Wait a little bit
 
                  break;
