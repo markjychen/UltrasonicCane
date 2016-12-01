@@ -82,14 +82,14 @@ void main(void)
                  casePWM = 1;
 
                  if (dataReadyFlag1){
-                     volt = analogRead(0);
+                     volt = analogRead(1);
                      if (volt<66){
                          volt = 67;
                      }
                     timeToFire = (volt-66+50)*3;//*6 66 is end of cane
                     dataReadyFlag1 = 0;
                  }
-                 if (dataReadyFlag2){
+                 /*if (dataReadyFlag2){
                      headSensorVal = analogRead(2);
                      if (headSensorVal < 90){
                          sendHeadFlag  = 1;
@@ -98,22 +98,13 @@ void main(void)
                          LATDbits.LATD5 = 0;
                      }
                      dataReadyFlag2 = 0;
-                 }
+                 }*/
                  //if (analogRead(2) < 60){
                  //    sendHeadWarning(0);
                  //}else{
                  //    LATDbits.LATD5 = 0;
                 // }
                 
-                sprintf(str,"%04d",volt); //Approximate conversion to 0-5V
-
-                SERTxSave(str[0]);
-                SERTxSave(str[1]);
-                SERTxSave(str[2]);
-                SERTxSave(str[3]);
-                SERTxSave('\r');
-                SERTxSave('\n');
-                Delay10KTCYx(25); //Wait a little bit
 
                  break;
                  

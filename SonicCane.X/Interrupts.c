@@ -32,6 +32,7 @@
 
 #include <p18f46k22.h>
 #include "Interrupts.h"
+#include "Serial.h"
 //#include <stdio.h>
 
 //Define statements
@@ -53,6 +54,8 @@ extern unsigned int sendHeadFlag;
 extern unsigned int casePWM;
 extern unsigned int sleep_mode;
 extern unsigned int didStateChange;
+extern unsigned int volt;
+extern unsigned int headSensorVal;
 
 //PWM Controls
 unsigned int PWMFireFlag;
@@ -60,8 +63,9 @@ unsigned int PWMTime;
 unsigned int delayPWMFireTick;
 
 //analog read
-unsigned int dataReadyTick1;
-unsigned int dataReadyTick2;
+unsigned int dataReadyTick1 = 0;
+unsigned int dataReadyTick2 = 0;
+unsigned int serialReadyTick = 0;
 unsigned int sendPulseFlag = 0;
 
 //Function definitions
@@ -181,6 +185,11 @@ void btn2ISR(void){
 
 void Sys_Tick_ISR (void)
 {
+    char str[4];
+    char str2[4];
+    char strS[1];
+
+
     if (PIR1bits.TMR1IF)            // If timer overflowed
     {
         TMR1H = One_ms_h;          // Reset timer to one millisecond
@@ -196,6 +205,7 @@ void Sys_Tick_ISR (void)
         analogReadTick++;        
         dataReadyTick1++;
         dataReadyTick2++;
+        serialReadyTick++;
         
         //List of functions to fire:
         if (analogReadTick >= 110){
@@ -203,6 +213,35 @@ void Sys_Tick_ISR (void)
             dataReadyTick1 = 0;
             dataReadyTick2 = 0;
             sendPulseFlag = 1;
+            
+            serialReadyTick = 0;
+            sprintf(str,"%04d",volt); //Approximate conversion to 0-5V
+            sprintf(str2, "%04d", headSensorVal);
+            sprintf(strS, "%1d", state);
+            
+            SERTxSave('S');
+            SERTxSave(':');
+            SERTxSave(' ');
+            SERTxSave(strS[0]);
+            SERTxSave(' ');
+
+            SERTxSave('L');
+            SERTxSave(':');
+            SERTxSave(' ');
+            SERTxSave(str[0]);
+            SERTxSave(str[1]);
+            SERTxSave(str[2]);
+            SERTxSave(str[3]);
+            SERTxSave(' ');
+            SERTxSave('H');
+            SERTxSave(':');
+            SERTxSave(str2[0]);
+            SERTxSave(str2[1]);
+            SERTxSave(str2[2]);
+            SERTxSave(str2[3]);
+            SERTxSave('\r');
+            SERTxSave('\n');
+        
         }
         if (sendPulseFlag == 1){
             LATBbits.LATB3 = 1;
