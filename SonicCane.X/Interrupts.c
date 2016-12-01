@@ -63,9 +63,9 @@ unsigned int PWMTime;
 unsigned int delayPWMFireTick;
 
 //analog read
-unsigned int dataReadyTick1 = 0;
-unsigned int dataReadyTick2 = 0;
-unsigned int serialReadyTick = 0;
+unsigned int dataReadyTick1;
+unsigned int dataReadyTick2;
+unsigned int serialReadyTick;
 unsigned int sendPulseFlag = 0;
 
 //Function definitions

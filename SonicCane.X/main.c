@@ -26,7 +26,7 @@
 #define RANGE_ONLY 2
 #define NUM_OF_STATES = 4
 
-unsigned int state = STANDARD;
+unsigned int state = 1;
 unsigned int timeToFire = 0;
 unsigned int dataReadyFlag1 = 0;
 unsigned int dataReadyFlag2 = 0;
@@ -34,7 +34,7 @@ unsigned int sendHeadFlag = 0;
 unsigned int headSensorVal = 0;
 unsigned int casePWM = 1;
 unsigned int sleep_mode = SLEEP_MODE;
-unsigned int didStateChange = 0;
+unsigned int didStateChange = 2;
 unsigned int volt = 0;
 
 void main(void)
@@ -89,7 +89,7 @@ void main(void)
                     timeToFire = (volt-66+50)*3;//*6 66 is end of cane
                     dataReadyFlag1 = 0;
                  }
-                 /*if (dataReadyFlag2){
+                 if (dataReadyFlag2){
                      headSensorVal = analogRead(2);
                      if (headSensorVal < 90){
                          sendHeadFlag  = 1;
@@ -98,7 +98,7 @@ void main(void)
                          LATDbits.LATD5 = 0;
                      }
                      dataReadyFlag2 = 0;
-                 }*/
+                 }
                  //if (analogRead(2) < 60){
                  //    sendHeadWarning(0);
                  //}else{
@@ -109,7 +109,7 @@ void main(void)
                  break;
                  
             case HEAD_ONLY:
-                if (didStateChange==1){
+                /*if (didStateChange==1){
                     INTCONbits.GIE=0;           // Disable interrupts
                     didStateChange = 0;
                     sendPWM(150);
@@ -119,15 +119,15 @@ void main(void)
                     delayMillisecond(100);
                     stopPWM();
                     INTCONbits.GIE=1;           // Enable interrupts
-                }
+                }*/
                 //LATAbits.LATA3 = 1;
                 //LATAbits.LATA5 = 0;
-                //casePWM = 0;
-                //stopPWM();
-                 if (dataReadyFlag1){
+                casePWM = 0;
+                stopPWM();
+                 /*if (dataReadyFlag1){
                     //timeToFire = (analogRead(1)+50)*6;//*6
                     dataReadyFlag1 = 0;
-                 }
+                 }*/
                  if (dataReadyFlag2){
                      headSensorVal = analogRead(2);
                      if (headSensorVal < 90){
@@ -141,7 +141,7 @@ void main(void)
                 
                 break;
             case RANGE_ONLY:
-                if (didStateChange==1){
+                /*if (didStateChange==1){
                     INTCONbits.GIE=0;           // Disable interrupts
                     didStateChange = 0;
                     //sendPWM(150);
@@ -151,7 +151,7 @@ void main(void)
                     //delayMillisecond(100);
                     stopPWM();
                     INTCONbits.GIE=1;           // Enable interrupts
-                }
+                }*/
                 casePWM = 1;
                 LATAbits.LATA3 = 0;
                 LATAbits.LATA5 = 1;
