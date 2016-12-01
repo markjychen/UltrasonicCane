@@ -6,7 +6,8 @@
 #include <delays.h>
 #include "Lcd.h"
 #include <stdio.h>
-//#include "System.h"
+#include "System.h"
+#include "Sensor.h"
 #include "Interrupts.h"
 
 #pragma config FOSC = INTIO67   // Internal OSC block, Port Function on RA6/7
@@ -68,7 +69,7 @@ void main(void)
                  }
                  if (dataReadyFlag2){
                      headSensorVal = analogRead(2);
-                     if (headSensorVal < 90){
+                     if (headSensorVal < 70){
                          sendHeadFlag  = 1;
                      }else{
                          sendHeadFlag = 0;
