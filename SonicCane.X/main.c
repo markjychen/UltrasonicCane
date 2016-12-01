@@ -34,7 +34,9 @@ unsigned int casePWM = 1;
 unsigned int sleep_mode = SLEEP_MODE;
 unsigned int didStateChange = 0;
 unsigned int volt = 0;
-
+unsigned int headThreshold = 70;
+unsigned int rangeThreshold = 66;
+unsigned float delayScale = 3.0;
 void main(void)
 {
 
@@ -61,15 +63,15 @@ void main(void)
                  //delayMillisecond(40);
                  if (dataReadyFlag1){
                      volt = analogRead(1);
-                     if (volt<66){
+                     if (volt<rangeThreshold){
                          volt = 67;
                      }
-                    timeToFire = (volt-66+50)*3;//*6 66 is end of cane
+                    timeToFire = (volt-rangeThreshold+50)*delayScale;//*6 66 is end of cane
                     dataReadyFlag1 = 0;
                  }
                  if (dataReadyFlag2){
                      headSensorVal = analogRead(2);
-                     if (headSensorVal < 70){
+                     if (headSensorVal < headThreshold){
                          sendHeadFlag  = 1;
                      }else{
                          sendHeadFlag = 0;
@@ -106,7 +108,7 @@ void main(void)
                  }*/
                  if (dataReadyFlag2){
                      headSensorVal = analogRead(2);
-                     if (headSensorVal < 90){
+                     if (headSensorVal < headThreshold){
                          sendHeadFlag  = 1;
                      }else{
                          sendHeadFlag = 0;
@@ -135,10 +137,10 @@ void main(void)
                 LATDbits.LATD5 = 0;
                  if (dataReadyFlag1){
                     volt = analogRead(1);
-                     if (volt<66){
+                     if (volt<rangeThreshold){
                          volt = 67;
                      }
-                    timeToFire = (volt-66+50)*3;//*6 66 is end of cane
+                    timeToFire = (volt-rangeThreshold+50)*delayScale;//*6 66 is end of cane
                     dataReadyFlag1 = 0;
                  }
                 break;
