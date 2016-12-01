@@ -54,7 +54,7 @@ extern unsigned int sendHeadFlag;
 extern unsigned int casePWM;
 extern unsigned int sleep_mode;
 extern unsigned int didStateChange;
-extern unsigned int volt;
+extern unsigned int rangeSensorVal;
 extern unsigned int headSensorVal;
 
 //PWM Controls
@@ -215,7 +215,7 @@ void Sys_Tick_ISR (void)
             sendPulseFlag = 1;
             
             serialReadyTick = 0;
-            sprintf(str,"%04d",volt); //Approximate conversion to 0-5V
+            sprintf(str,"%04d",rangeSensorVal); //Approximate conversion to 0-5V
             sprintf(str2, "%04d", headSensorVal);
             sprintf(strS, "%1d", state);
             

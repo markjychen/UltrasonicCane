@@ -26,7 +26,7 @@
 #define RANGE_ONLY 2
 #define NUM_OF_STATES = 4
 
-unsigned int state = 1;
+unsigned int state = 0;
 unsigned int timeToFire = 0;
 unsigned int dataReadyFlag1 = 0;
 unsigned int dataReadyFlag2 = 0;
@@ -35,13 +35,13 @@ unsigned int headSensorVal = 0;
 unsigned int casePWM = 1;
 unsigned int sleep_mode = SLEEP_MODE;
 unsigned int didStateChange = 2;
-unsigned int volt = 0;
+unsigned int rangeSensorVal = 0;
 
 void main(void)
 {
-    unsigned int volt;
     char input;
-    char str[4];
+    char str[4];    char str2[4];
+
     ANSELBbits.ANSB5 = 0;
     TRISBbits.RB5 = 0;
     ANSELBbits.ANSB4 = 0;
@@ -82,12 +82,23 @@ void main(void)
                  casePWM = 1;
 
                  if (dataReadyFlag1){
-                     volt = analogRead(1);
-                     if (volt<66){
-                         volt = 67;
+                     rangeSensorVal = analogRead(1);
+                     if (rangeSensorVal<66){
+                         rangeSensorVal = 67;
                      }
-                    timeToFire = (volt-66+50)*3;//*6 66 is end of cane
+                    timeToFire = (rangeSensorVal-66+50)*3;//*6 66 is end of cane
                     dataReadyFlag1 = 0;
+                    
+                               /* sprintf(str, "%04d", headSensorVal);
+                    SERTxSave('L');
+            SERTxSave(':');
+            SERTxSave(' ');
+            SERTxSave(str[0]);
+            SERTxSave(str[1]);
+            SERTxSave(str[2]);
+            SERTxSave(str[3]);
+            SERTxSave('\r');
+            SERTxSave('\n');*/
                  }
                  if (dataReadyFlag2){
                      headSensorVal = analogRead(2);
@@ -98,6 +109,16 @@ void main(void)
                          LATDbits.LATD5 = 0;
                      }
                      dataReadyFlag2 = 0;
+                                 /*sprintf(str2, "%1d", state);
+
+                                 SERTxSave('H');
+            SERTxSave(':');
+            SERTxSave(str2[0]);
+            SERTxSave(str2[1]);
+            SERTxSave(str2[2]);
+            SERTxSave(str2[3]);
+            SERTxSave('\r');
+            SERTxSave('\n');*/
                  }
                  //if (analogRead(2) < 60){
                  //    sendHeadWarning(0);
@@ -158,11 +179,11 @@ void main(void)
                 sendHeadFlag = 0;
                 LATDbits.LATD5 = 0;
                  if (dataReadyFlag1){
-                    volt = analogRead(1);
-                     if (volt<66){
-                         volt = 67;
+                    rangeSensorVal = analogRead(1);
+                     if (rangeSensorVal<66){
+                         rangeSensorVal = 67;
                      }
-                    timeToFire = (volt-66+50)*3;//*6 66 is end of cane
+                    timeToFire = (rangeSensorVal-66+50)*3;//*6 66 is end of cane
                     dataReadyFlag1 = 0;
                  }
                 break;
